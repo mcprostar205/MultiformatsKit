@@ -52,3 +52,68 @@ public enum VarintError: Error, LocalizedError {
         }
     }
 }
+
+/// A list of errors related to Multicodec operations.
+public enum MulticodecError: Error, LocalizedError {
+
+    /// The name provided is invalid.
+    ///
+    /// - Parameter name: The name provided.
+    case invalidName(name: String)
+
+    /// The code provided is invalid.
+    ///
+    /// - Parameter code: The code provided.
+    case invalidCode(code: Int)
+
+    /// The status provided is invalid.
+    ///
+    /// - Parameter status: The status provided.
+    case invalidStatus(status: String)
+
+    /// There is a mismatch with the code.
+    ///
+    /// - Parameters:
+    ///   - expected: The code that was expected.
+    ///   - found: The code that was found instead.
+    case mismatchedCode(expected: Int, found: Int)
+
+    /// The Multicode is not registered.
+    ///
+    /// - Parameter string: The Multicode's ID.
+    case notRegistered(id: String)
+
+    /// There is a duplicate name.
+    ///
+    /// - Parameter name: The provided name.
+    case duplicateName(name: String)
+
+    /// There is a duplicate code.
+    ///
+    /// - Parameter code: The provided code.
+    case duplicateCode(code: Int)
+
+    /// The query name or code is too ambiguous.
+    case ambiguousQuery
+
+    public var errorDescription: String? {
+        switch self {
+            case .invalidName(let name):
+                return "Invalid multicodec name: \(name)"
+            case .invalidCode(let code):
+                return "Invalid multicodec code: \(code)"
+            case .invalidStatus(let status):
+                return "Invalid multicodec status: \(status)"
+            case .mismatchedCode(let expected, let found):
+                return "Expected code \(expected), but found \(found)."
+            case .notRegistered(let id):
+                return "Multicodec not registered: \(id)"
+            case .duplicateName(let name):
+                return "Multicodec name already exists: \(name)"
+            case .duplicateCode(let code):
+                return "Multicodec code already exists: \(code)"
+            case .ambiguousQuery:
+                return "You must specify exactly one of name or code."
+        }
+    }
+}
