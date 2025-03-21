@@ -11,11 +11,17 @@ let package = Package(
             name: "MultiformatsKit",
             targets: ["MultiformatsKit"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "3.12.2")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "MultiformatsKit"),
+            name: "MultiformatsKit",
+            dependencies: [
+                .product(name: "Crypto", package: "swift-crypto")
+            ]),
         .testTarget(
             name: "MultiformatsKitTests",
             dependencies: ["MultiformatsKit"]
