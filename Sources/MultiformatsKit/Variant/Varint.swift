@@ -17,6 +17,8 @@ public struct Varint {
     ///
     /// - Parameter value: The integer to encode.
     /// - Returns: The encoded varint as `Data`.
+    ///
+    /// - Throws: `Varint.integerTooLarge` if the integer is too large.
     public static func encode(_ value: UInt64) throws -> Data {
         guard value < (1 << 63) else {
             throw VarintError.integerTooLarge
@@ -45,6 +47,8 @@ public struct Varint {
     ///
     /// - Parameter data: The encoded data.
     /// - Returns: The decoded integer.
+    ///
+    /// - Throws: `VarintError.notAllBytesUsed` if not all of the data has been used.
     public static func decode(_ data: Data) throws -> UInt64 {
         let (value, bytesRead) = try decodeRaw(from: data)
         guard bytesRead == data.count else {
