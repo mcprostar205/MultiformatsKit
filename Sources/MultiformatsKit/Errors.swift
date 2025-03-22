@@ -117,3 +117,39 @@ public enum MulticodecError: Error, LocalizedError {
         }
     }
 }
+
+/// Errors for BaseX encoding and decoding.
+public enum BaseXError: Error {
+    case invalidAlphabet(alphabet: String)
+    case ambiguousCharacter(alphabet: Character)
+    case invalidCharacter(character: Character)
+    case duplicateCharacter(character: Character)
+    case invalidNumberOfCharacters
+
+    var description: String {
+        switch self {
+            case .invalidAlphabet(let alphabet):
+                return "Invalid BaseX alphabet: \(alphabet)."
+            case .ambiguousCharacter(alphabet: let alphabet):
+                return "\(alphabet) is ambiguous. Please use a different alphabet."
+            case .invalidCharacter(character: let character):
+                return "Invalid BaseX character: \(character)."
+            case .duplicateCharacter(character: let character):
+                return "Duplicate BaseX character: \(character)."
+            case .invalidNumberOfCharacters:
+                return "The number of characters in the input is invalid."
+        }
+    }
+}
+
+public enum PrefixError: Error {
+    case invalidPrefix
+    case unableToDecodeMultibaseString
+    case unsupportedMultibasePrefix
+}
+
+public enum DecodingError: Error {
+    case invalidCharacter(name: String)
+    case unexpectedEndOfData
+}
+
