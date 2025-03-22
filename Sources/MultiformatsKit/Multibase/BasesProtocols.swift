@@ -80,4 +80,3 @@ public protocol UnibaseDecoder: MultibaseDecoder {
 public protocol CombobaseDecoder: MultibaseDecoder {
     var decoders: [Character: UnibaseDecoder] { get }
 }
-
