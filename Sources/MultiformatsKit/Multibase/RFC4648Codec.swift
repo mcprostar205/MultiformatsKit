@@ -246,13 +246,3 @@ public struct Codec: BaseProtocol, MultibaseCodec, Sendable {
 public func from(name: String, prefix: Character, encode: @Sendable @escaping (Data) -> String, decode: @Sendable @escaping (String) throws -> Data) -> Codec {
     return Codec(name: name, prefix: prefix, encodeFunction: encode, decodeFunction: decode)
 }
-
-/// Function to create a Codec instance using a baseX encoding system.
-public func baseX(name: String, prefix: Character, alphabet: BaseXAlphabet) -> Codec {
-
-    let baseXEncoderDecoder = BaseX(alphabet: alphabet)
-    let baseXAlphabet = BaseX(alphabet: alphabet)
-    return from(name: name, prefix: prefix, encode: baseXEncoderDecoder.encode, decode: { text in
-        return Data(try baseXAlphabet.decode(text))
-    })
-}
