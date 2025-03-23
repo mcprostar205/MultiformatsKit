@@ -8,7 +8,7 @@
 import Foundation
 
 /// An encoder and decoder, based on the RFC 4648 specification.
-public struct RFC4648Codec: Sendable {
+public struct RFC4648Codec: MultibaseSendable {
 
     /// The name of the base.
     public let name: String
@@ -141,13 +141,14 @@ public struct Encoder: MultibaseEncoder, BaseEncoder, Sendable {
         return encodeFunction(bytes)
     }
 
-    public func encode(_ bytes: Data) -> Multibase {
-        return Multibase(prefix: self.prefix, value: encodeFunction(bytes))
+    public func encode(_ bytes: Data) -> String {
+        return encodeFunction(bytes)
     }
 }
 
 /// General decoder that supports both base decoding and multibase decoding.
 public struct Decoder: MultibaseDecoder, UnibaseDecoder, BaseDecoder, Sendable {
+
     public let name: String
     public let prefix: Character
     private let decodeFunction: @Sendable (String) throws -> Data
@@ -162,12 +163,12 @@ public struct Decoder: MultibaseDecoder, UnibaseDecoder, BaseDecoder, Sendable {
         return try decodeFunction(text)
     }
 
-    public func decode(_ text: Multibase) throws -> Data {
-        let fullString = text.fullString
-        guard let firstCharacter = fullString.first, firstCharacter == prefix else {
+    public func decode(_ text: String) throws -> Data {
+        guard let firstCharacter = text.first, firstCharacter == prefix else {
             throw PrefixError.invalidPrefix
         }
-        return try decodeFunction(String(fullString.dropFirst()))
+
+        return try decodeFunction(String(text.dropFirst()))
     }
 
     public func or<Other: UnibaseDecoder>(_ other: Other) -> ComposedDecoder {
@@ -176,15 +177,15 @@ public struct Decoder: MultibaseDecoder, UnibaseDecoder, BaseDecoder, Sendable {
 }
 
 public struct ComposedDecoder: MultibaseDecoder, CombobaseDecoder {
+
     public let decoders: [Character: UnibaseDecoder]
 
     public init(decoders: [Character: UnibaseDecoder]) {
         self.decoders = decoders
     }
 
-    public func decode(_ input: Multibase) throws -> Data {
-        let fullString = input.fullString
-        guard let firstCharacter = fullString.first, let decoder = decoders[firstCharacter] else {
+    public func decode(_ input: String) throws -> Data {
+        guard let firstCharacter = input.first, let decoder = decoders[firstCharacter] else {
             throw PrefixError.unsupportedMultibasePrefix
         }
         return try decoder.decode(input)
@@ -197,13 +198,8 @@ public struct ComposedDecoder: MultibaseDecoder, CombobaseDecoder {
     }
 }
 
-/// Helper function to combine multiple decoders.
-public func combineDecoders<L: UnibaseDecoder, R: UnibaseDecoder>(left: L, right: R) -> ComposedDecoder {
-    return left.or(right)
-}
-
 /// Codec class implementing both encoder and decoder.
-public struct Codec: BaseProtocol, MultibaseCodec, Sendable {
+public struct Codec: BaseProtocol, Sendable {
 
     public let name: String
 
@@ -211,8 +207,6 @@ public struct Codec: BaseProtocol, MultibaseCodec, Sendable {
 
     public var baseEncoder: BaseEncoder { encoderInstance }
     public var baseDecoder: BaseDecoder { decoderInstance }
-    public var multibaseEncoder: MultibaseEncoder { encoderInstance }
-    public var multibaseDecoder: MultibaseDecoder { decoderInstance }
 
     private let encoderInstance: Encoder
     private let decoderInstance: Decoder
@@ -230,15 +224,11 @@ public struct Codec: BaseProtocol, MultibaseCodec, Sendable {
     }
 
     public func encode(_ bytes: Data) -> String {
-        return encoderInstance.encode(bytes).fullString
+        return encoderInstance.encode(bytes)
     }
 
     public func decode(_ text: String) throws -> Data {
-        guard let prefix = text.first else {
-            throw PrefixError.invalidPrefix
-        }
-        let multibase = Multibase(prefix: prefix, value: String(text.dropFirst()))
-        return try decoderInstance.decode(multibase)
+        return try decoderInstance.decode(String(text.dropFirst()))
     }
 }
 

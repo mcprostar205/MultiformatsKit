@@ -8,7 +8,7 @@
 import Foundation
 
 /// A struct for encoding and decoding base-x representations of data.
-public struct BaseX: Sendable {
+public struct BaseX: MultibaseSendable {
     private let alphabet: BaseXAlphabet
     private let base: Int
     private let prefix: Character?
@@ -16,7 +16,7 @@ public struct BaseX: Sendable {
     private let factor: Double
     private let inverseFactor: Double
 
-    /// Initializes a new BaseX encoder/decoder with the specified `BaseXAlphabet`.
+    /// Initializes a new `BaseX` encoder/decoder with the specified `BaseXAlphabet`.
     ///
     /// - Parameter alphabet: A `BaseXAlphabet` defining the character set used for encoding.
     public init(alphabet: BaseXAlphabet) {
