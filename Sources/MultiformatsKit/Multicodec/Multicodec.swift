@@ -8,7 +8,7 @@
 import Foundation
 
 /// 
-public struct Multicodec: Hashable, Codable {
+public struct Multicodec: Hashable, Codable, Sendable {
 
     /// The name of the codec.
     public let name: String
@@ -115,7 +115,7 @@ public struct Multicodec: Hashable, Codable {
 }
 
 /// The Multicodec status.
-public enum MulticodecStatus: String, Codable {
+public enum MulticodecStatus: String, Codable, Sendable {
 
     /// The Multicodec is in the draft status.
     case draft
