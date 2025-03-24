@@ -56,22 +56,3 @@ public struct Multibase: Sendable {
         return "\(prefix)\(value)"
     }
 }
-
-/// Combined multibase codec for encoding and decoding.
-public protocol MultibaseCodec {
-    var name: String { get }
-    var prefix: Character { get }
-    var multibaseEncoder: MultibaseEncoder { get }
-    var multibaseDecoder: MultibaseDecoder { get }
-}
-
-/// A unibase decoder responsible for decoding a specific base encoding.
-public protocol UnibaseDecoder: MultibaseDecoder {
-    var prefix: Character { get }
-    func or<Other: UnibaseDecoder>(_ other: Other) -> ComposedDecoder
-}
-
-/// A combobase decoder that can decode multiple base encodings.
-public protocol CombobaseDecoder: MultibaseDecoder {
-    var decoders: [Character: UnibaseDecoder] { get }
-}
