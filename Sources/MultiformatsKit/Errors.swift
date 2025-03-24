@@ -153,3 +153,20 @@ public enum DecodingError: Error {
     case unexpectedEndOfData
 }
 
+/// Errors that can be thrown by the CID implementation.
+public enum CIDError: Error, LocalizedError {
+    case invalidCID(String)
+    case invalidVersion(UInt64)
+    case invalidMultihashForCIDv0
+
+    public var errorDescription: String? {
+        switch self {
+            case .invalidCID(let message):
+                return "Invalid CID: \(message)"
+            case .invalidVersion(let version):
+                return "Invalid or unsupported CID version: \(version)"
+            case .invalidMultihashForCIDv0:
+                return "CIDv0 must be a valid SHA2-256 multihash: exactly 34 bytes long with prefix 0x12, 0x20."
+        }
+    }
+}
