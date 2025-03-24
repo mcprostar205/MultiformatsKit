@@ -24,17 +24,17 @@ public struct Varint {
             throw VarintError.integerTooLarge
         }
 
-        var x = value
+        var encodedValue = value
         var result = Data()
 
         repeat {
-            var byte = UInt8(x & 0b0111_1111)
-            x >>= 7
-            if x > 0 {
+            var byte = UInt8(encodedValue & 0b0111_1111)
+            encodedValue >>= 7
+            if encodedValue > 0 {
                 byte |= 0b1000_0000 // set continuation bit
             }
             result.append(byte)
-        } while x > 0
+        } while encodedValue > 0
 
         if result.count > Self.maxBytes {
             throw VarintError.integerTooLarge
@@ -54,6 +54,7 @@ public struct Varint {
         guard bytesRead == data.count else {
             throw VarintError.notAllBytesUsed
         }
+
         return value
     }
 
@@ -74,34 +75,35 @@ public struct Varint {
     /// - Throws: `VarintError` if the continuation byte is missing, the integer is too large,
     /// or the value wasn't encoded properly.
     public static func decodeRaw(from data: Data) throws -> (UInt64, Int) {
-        var x: UInt64 = 0
-        var shift = 0
-        var numBytesRead = 0
+        var decodedValue: UInt64 = 0
+        var bitShiftAmount = 0
+        var bytesRead = 0
 
         for byte in data {
             let valuePart = UInt64(byte & 0b0111_1111)
-            x |= valuePart << shift
-            numBytesRead += 1
+            decodedValue |= valuePart << bitShiftAmount
+            bytesRead += 1
 
             if (byte & 0b1000_0000) == 0 {
                 break
             }
 
-            shift += 7
-            guard shift < 64, numBytesRead <= maxBytes else {
+            bitShiftAmount += 7
+
+            guard bitShiftAmount < 64, bytesRead <= maxBytes else {
                 throw VarintError.integerTooLarge
             }
         }
 
-        if numBytesRead == 0 {
+        if bytesRead == 0 {
             throw VarintError.emptyInput
         }
 
-        if numBytesRead > 1 && x < (1 << (7 * (numBytesRead - 1))) {
+        if bytesRead > 1 && decodedValue < (1 << (7 * (bytesRead - 1))) {
             throw VarintError.overlongEncoding
         }
 
-        return (x, numBytesRead)
+        return (decodedValue, bytesRead)
     }
 
     /// Decodes a varint from an `InputStream`, returns value and number of bytes read.
@@ -112,35 +114,36 @@ public struct Varint {
     /// - Throws: `VarintError` if the continuation byte is missing, the integer is too large,
     /// or the value wasn't encoded properly.
     public static func decodeRaw(from stream: InputStream) throws -> (UInt64, Int) {
-        var x: UInt64 = 0
-        var shift = 0
-        var numBytesRead = 0
+        var decodedValue: UInt64 = 0
+        var bitShiftAmount = 0
+        var bytesRead = 0
 
         while true {
             var buffer: UInt8 = 0
             let read = stream.read(&buffer, maxLength: 1)
             guard read == 1 else {
-                throw VarintError.missingContinuationByte(byteIndex: numBytesRead)
+                throw VarintError.missingContinuationByte(byteIndex: bytesRead)
             }
 
             let valuePart = UInt64(buffer & 0b0111_1111)
-            x |= valuePart << shift
-            numBytesRead += 1
+            decodedValue |= valuePart << bitShiftAmount
+            bytesRead += 1
 
             if (buffer & 0b1000_0000) == 0 {
                 break
             }
 
-            shift += 7
-            guard shift < 64, numBytesRead <= maxBytes else {
+            bitShiftAmount += 7
+
+            guard bitShiftAmount < 64, bytesRead <= maxBytes else {
                 throw VarintError.integerTooLarge
             }
         }
 
-        if numBytesRead > 1 && x < (1 << (7 * (numBytesRead - 1))) {
+        if bytesRead > 1 && decodedValue < (1 << (7 * (bytesRead - 1))) {
             throw VarintError.overlongEncoding
         }
 
-        return (x, numBytesRead)
+        return (decodedValue, bytesRead)
     }
 }
