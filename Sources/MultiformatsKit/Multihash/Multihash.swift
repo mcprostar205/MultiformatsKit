@@ -17,7 +17,9 @@ public struct Multihash: Hashable, Codable, Sendable {
     }
 
     public var encoded: Data {
-        (try? codec.wrap(digest)) ?? Data()
+        let code = try? Varint.encode(UInt64(codec.code))
+        let length = try? Varint.encode(UInt64(digest.count))
+        return (code ?? Data()) + (length ?? Data()) + digest
     }
 
     public static func decode(_ data: Data) async throws -> Multihash {
