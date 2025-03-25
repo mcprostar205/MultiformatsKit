@@ -6,7 +6,7 @@
 
 <div align="center">
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/atprotokit/atcryptography?style=flat&logo=github)](https://github.com/ATProtoKit/MultiformatsKit)
+[![GitHub Repo stars](https://img.shields.io/github/stars/atprotokit/multiformatskit?style=flat&logo=github)](https://github.com/ATProtoKit/MultiformatsKit)
 
 </div>
 <div align="center">
