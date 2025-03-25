@@ -190,7 +190,7 @@ public enum DecodingError: Error {
     /// There is an invalid character.
     ///
     /// - Parameter character: The invalid character.
-    case invalidCharacter(character: String)
+    case invalidCharacter(character: Character)
 
     /// There was an unexpected amount of data at the end.
     case unexpectedEndOfData
