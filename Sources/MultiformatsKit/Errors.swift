@@ -211,6 +211,10 @@ public enum CIDError: Error {
     /// The CID is invalid.
     case invalidCID(message: String)
 
+    /// The content for the CID couldn't be converted to a `Data` object.
+    ///
+    /// - Parameter string: The content itself.
+    case invalidDataConversion(content: String)
 
     /// The version number for the CID is invalid.
     ///
@@ -224,6 +228,8 @@ public enum CIDError: Error {
         switch self {
             case .invalidCID(let message):
                 return "Invalid CID. \(message)"
+            case .invalidDataConversion(let content):
+                return "The string (\(content)) for the CID couldn't be converted to a `Data` object."
             case .invalidVersion(let version):
                 return "Invalid or unsupported CID version: \(version)"
             case .invalidMultihashForCIDv0:
