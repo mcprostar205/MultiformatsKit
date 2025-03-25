@@ -4,6 +4,18 @@
 
 <h1 align="center">MultiformatsKit</h1>
 
+<div align="center">
+
+[![GitHub Repo stars](https://img.shields.io/github/stars/atprotokit/atcryptography?style=flat&logo=github)](https://github.com/ATProtoKit/MultiformatsKit)
+
+</div>
+<div align="center">
+
+[![Static Badge](https://img.shields.io/badge/Follow-%40cjrriley.com-0073fa?style=flat&logo=bluesky&labelColor=%23151e27&link=https%3A%2F%2Fbsky.app%2Fprofile%2Fcjrriley.com)](https://bsky.app/profile/cjrriley.com)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/masterj93?color=%23cb5f96&link=https%3A%2F%2Fgithub.com%2Fsponsors%2FMasterJ93)](https://github.com/sponsors/MasterJ93)
+
+</div>
+
 **MultiformatsKit** is a native Swift implementation of the [Multiformats](https://multiformats.io) protocol suite — including [Multibase](https://github.com/multiformats/multibase), [Multicodec](https://github.com/multiformats/multicodec), [Multihash](https://github.com/multiformats/multihash), and [CID](https://github.com/multiformats/cid).
 
 This package enables content-addressing, self-describing data structures, and CID generation — all with `Sendable`-safe Swift code.
