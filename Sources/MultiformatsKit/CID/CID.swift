@@ -63,12 +63,6 @@ import Foundation
 ///         throw error
 ///     }
 /// }
-/// let data = Data("Legacy content".utf8)
-/// let sha256 = try SHA256Multihash()
-/// let digest = sha256.hash(data)
-///
-/// let cid = try CID(v0WithMultihash: Multihash(codec: sha256.codec, digest: digest))
-/// print(cid.string) // Qm... (base58btc CIDv0 string)
 /// ```
 public struct CID: Sendable, Hashable {
 
