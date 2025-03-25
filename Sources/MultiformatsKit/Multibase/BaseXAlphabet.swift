@@ -7,7 +7,13 @@
 
 import Foundation
 
+/// A structure representing a base-x encoding alphabet for use with ``BaseX``.
 ///
+/// This `struct` defines the character set and prefix for custom base encodings such as Base58,
+/// Base36, and other user-defined alphabets. It precomputes lookup tables to optimize encoding
+/// and decoding.
+///
+/// Use ``BaseXAlphabet/create(alphabet:prefix:)`` to safely create a valid alphabet instance.
 public struct BaseXAlphabet: Sendable {
 
     /// The encoding character set.

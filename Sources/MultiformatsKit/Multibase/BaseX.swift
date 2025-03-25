@@ -50,7 +50,7 @@ public struct BaseX: MultibaseSendable {
         self.inverseFactor = log(256) / log(Double(base))
     }
 
-    /// Encodes the given byte array into a base-x string.
+    /// Encodes the given `Data` object into a base-x string.
     ///
     /// - Parameter data: The data to encode.
     /// - Returns: A base-x encoded string.
@@ -95,8 +95,8 @@ public struct BaseX: MultibaseSendable {
 
     /// Decodes a base-x encoded string into a `Data` object.
     ///
-    /// - Parameter string: The encoded string.
-    /// - Returns: The decoded `Data`.
+    /// - Parameter string: The encoded `String`.
+    /// - Returns: The decoded `Data` object.
     ///
     /// - Throws: `BaseXError.invalidCharacter` if the string contains non-alphabet characters.
     public func decode(_ string: String) throws -> Data {
