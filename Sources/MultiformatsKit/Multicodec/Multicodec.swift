@@ -24,15 +24,19 @@ import Foundation
 /// ### Example
 ///
 /// ```swift
-/// let rawData = Data([0xde, 0xad, 0xbe, 0xef])
-/// let codec = try Multicodec(name: "example-codec", tag: "custom", code: 0x300001)
+/// do {
+///     let rawData = Data([0xde, 0xad, 0xbe, 0xef])
+///     let codec = try Multicodec(name: "example-codec", tag: "custom", code: 0x300001)
 ///
-/// // Wrap data with varint-encoded codec prefix
-/// let wrapped = try codec.wrap(rawData)
+///     // Wrap data with varint-encoded codec prefix
+///     let wrapped = try codec.wrap(rawData)
 ///
-/// // Later: unwrap the prefix to get the original data
-/// let unwrapped = try codec.unwrap(wrapped)
-/// print(unwrapped == rawData) // true
+///     // Later: unwrap the prefix to get the original data
+///     let unwrapped = try codec.unwrap(wrapped)
+///     print(unwrapped == rawData) // true
+/// } catch {
+///     throw error
+/// }
 /// ```
 public struct Multicodec: Hashable, Codable, Sendable {
 

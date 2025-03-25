@@ -17,12 +17,16 @@ import Foundation
 ///
 /// ```swift
 /// Task {
-///     let data = Data("hello".utf8)
-///     let algorithm = try SHA256Multihash()
-///     try await MultihashFactory.shared.register(algorithm)
+///     do {
+///         let data = Data("hello".utf8)
+///         let algorithm = try SHA256Multihash()
+///         try await MultihashFactory.shared.register(algorithm)
 ///
-///     let multihash = try await MultihashFactory.shared.hash(using: "sha2-256", data: data)
-///     print(multihash.encoded.map { String(format: "%02x", $0) }.joined())
+///         let multihash = try await MultihashFactory.shared.hash(using: "sha2-256", data: data)
+///         print(multihash.encoded.map { String(format: "%02x", $0) }.joined())
+///     } catch {
+///         throw error
+///     }
 /// }
 /// ```
 public actor MultihashFactory {

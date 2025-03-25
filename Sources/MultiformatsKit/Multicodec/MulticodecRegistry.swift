@@ -17,19 +17,23 @@ import Foundation
 /// - Ensure that codecs are not duplicated or mismatched.
 ///
 /// ```swift
-/// let codec = try Multicodec(name: "my-codec", tag: "custom", code: 0x300005)
-/// try await MulticodecRegistry.shared.register(codec)
+/// do {
+///     let codec = try Multicodec(name: "my-codec", tag: "custom", code: 0x300005)
+///     try await MulticodecRegistry.shared.register(codec)
 ///
-/// let data = Data("Hello".utf8)
-/// let wrapped = try await MulticodecRegistry.shared.wrap(codec, rawData: data)
+///     let data = Data("Hello".utf8)
+///     let wrapped = try await MulticodecRegistry.shared.wrap(codec, rawData: data)
 ///
-/// let (unwrappedCodec, unwrappedData) = try await MulticodecRegistry.shared.unwrap(wrapped)
-/// print(unwrappedCodec.name) // "my-codec"
+///     let (unwrappedCodec, unwrappedData) = try await MulticodecRegistry.shared.unwrap(wrapped)
+///     print(unwrappedCodec.name) // "my-codec"
 ///
-/// if let string = String(data: unwrappedData, encoding: .utf8) {
-///     print(string) // "Hello"
-/// } else {
-///     print("Failed to decode UTF-8 string")
+///     if let string = String(data: unwrappedData, encoding: .utf8) {
+///         print(string) // "Hello"
+///     } else {
+///         print("Failed to decode UTF-8 string")
+///     }
+/// } catch {
+///     thow error
 /// }
 /// ```
 ///
