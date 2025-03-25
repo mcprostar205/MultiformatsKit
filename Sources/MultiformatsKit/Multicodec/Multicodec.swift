@@ -138,17 +138,17 @@ public struct Multicodec: Hashable, Codable, Sendable {
         hasher.combine(name)
         hasher.combine(code)
     }
-}
 
-/// The Multicodec status.
-public enum MulticodecStatus: String, Codable, Sendable {
+    /// The Multicodec status.
+    public enum MulticodecStatus: String, Codable, Sendable {
 
-    /// The Multicodec is in the draft status.
-    case draft
+        /// The Multicodec is in the draft status.
+        case draft
 
-    /// The Multicodec is permanent.
-    case permanent
+        /// The Multicodec is permanent.
+        case permanent
 
-    /// The Multicodec is deprecated.
-    case deprecated
+        /// The Multicodec is deprecated.
+        case deprecated
+    }
 }

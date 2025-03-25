@@ -154,7 +154,7 @@ public actor MulticodecRegistry {
     ///   - tag: An array of tags. Optional. Defaults to `nil`.
     ///   - status: An array of statuses. Optional. Defaults to `nil`.
     /// - Returns: An array of `Multicodec` objects that fits the parameters.
-    public func table(tag: Set<String>? = nil, status: Set<MulticodecStatus>? = nil) -> [Multicodec] {
+    public func table(tag: Set<String>? = nil, status: Set<Multicodec.MulticodecStatus>? = nil) -> [Multicodec] {
         return codeTable.values.sorted(by: {
             $0.code < $1.code
         }).filter { codec in
