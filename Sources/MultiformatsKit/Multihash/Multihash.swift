@@ -11,14 +11,12 @@ import Foundation
 /// the [Multihash spec](https://github.com/multiformats/multihash).
 ///
 /// A multihash combines:
-/// - A `Multicodec` indicating the hashing algorithm used
-/// - The digest bytes
-/// - A varint-encoded prefix indicating the hash function and length
+/// - A `Multicodec` indicating the hashing algorithm used.
+/// - The digest bytes.
+/// - A varint-encoded prefix indicating the hash function and length.
 ///
 /// This struct is used in protocols like IPFS, IPLD, libp2p, and CID for verifying
 /// data integrity.
-///
-/// Conforms to `Codable`, `Hashable`, and `Sendable`.
 public struct Multihash: Hashable, Codable, Sendable {
 
     /// The multicodec indicating which hash function was used.
