@@ -2,9 +2,17 @@
 
 Create cryptographic hashes, base encodings, serialized serialization codecs, and more.
 
+@Metadata {
+    @PageImage(
+        purpose: icon, 
+        source: "multiformatskit_icon", 
+        alt: "A technology icon representing the MultiformatsKit framework.")
+    @PageColor(blue)
+}
+
 ## Overview
 
-`MultiformatsKit` is a Swift implementation of the [Multiformats](https://multiformats.io) suite of specifications. It enables content addressing and self-describing data formats in Swift using consistent and interoperable primitives.
+`MultiformatsKit` is a Swift implementation of the [Multiformats](https://multiformats.io) suite of specifications. It enables content addressing and self-describing data formats in Swift using consistent and standardized building blocks.
 
 This package includes support for the core Multiformats technologies:
 
