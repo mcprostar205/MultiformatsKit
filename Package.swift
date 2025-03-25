@@ -6,7 +6,11 @@ import PackageDescription
 let package = Package(
     name: "MultiformatsKit",
     platforms: [
-        .macOS(.v12)
+        .iOS(.v14),
+        .macOS(.v12),
+        .tvOS(.v14),
+        .visionOS(.v1),
+        .watchOS(.v9)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
