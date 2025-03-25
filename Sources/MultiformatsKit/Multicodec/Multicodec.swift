@@ -7,7 +7,33 @@
 
 import Foundation
 
-/// 
+/// A data structure that represents a Multicodec entry, as defined in
+/// the [Multicodec specification](https://github.com/multiformats/multicodec).
+///
+/// A Multicodec defines a self-describing format using a compact prefix (`code`) to identify the
+/// content type of the associated binary data. Multicodecs are used heavily in protocols such as
+/// IPFS, IPLD, libp2p, and others.
+///
+/// Each instance stores the codec's name, numeric code, usage tag, registration status, and an
+/// optional description. The codec can be used to wrap raw binary data with a varint-encoded
+/// prefix, and to unwrap that data later.
+///
+/// Use `MulticodecRegistry.shared` to register and retrieve codecs globally, or to validate
+/// and organize codecs by tag or status.
+///
+/// ### Example
+///
+/// ```swift
+/// let rawData = Data([0xde, 0xad, 0xbe, 0xef])
+/// let codec = try Multicodec(name: "example-codec", tag: "custom", code: 0x300001)
+///
+/// // Wrap data with varint-encoded codec prefix
+/// let wrapped = try codec.wrap(rawData)
+///
+/// // Later: unwrap the prefix to get the original data
+/// let unwrapped = try codec.unwrap(wrapped)
+/// print(unwrapped == rawData) // true
+/// ```
 public struct Multicodec: Hashable, Codable, Sendable {
 
     /// The name of the codec.
@@ -43,10 +69,10 @@ public struct Multicodec: Hashable, Codable, Sendable {
     ///   - name: The name of the codec.
     ///   - tag: The tag of the codec.
     ///   - code: The code of the codec.
-    ///   - status: The status of the codec. Defaults to `.default`.
-    ///   - description: A description of the codec. Optional. Defaults to `nil`,
+    ///   - status: The status of the codec. Defaults to `.draft`.
+    ///   - description: A description of the codec. Optional. Defaults to `nil`.
     ///
-    ///   - Throws: `MulticodecError` if the name or code is invalid.
+    /// - Throws: `MulticodecError` if the name or code is invalid.
     public init(name: String, tag: String, code: Int, status: MulticodecStatus = .draft, description: String? = nil) throws {
         guard name.range(of: #"^[a-z][a-z0-9_-]+$"#, options: .regularExpression) != nil else {
             throw MulticodecError.invalidName(name: name)

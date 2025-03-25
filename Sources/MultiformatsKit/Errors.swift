@@ -8,7 +8,7 @@
 import Foundation
 
 /// A list of errors related to varint encoding and decoding.
-public enum VarintError: Error, LocalizedError {
+public enum VarintError: Error {
 
     /// The integer is not an unsigned integer.
     case negativeInteger
@@ -33,7 +33,7 @@ public enum VarintError: Error, LocalizedError {
     /// - Parameter byteIndex: The index of the byte.
     case missingContinuationByte(byteIndex: Int)
 
-    public var errorDescription: String? {
+    public var description: String? {
         switch self {
             case .negativeInteger:
                 return "Integer is negative. Varint only supports unsigned integers."
@@ -54,7 +54,7 @@ public enum VarintError: Error, LocalizedError {
 }
 
 /// A list of errors related to Multicodec operations.
-public enum MulticodecError: Error, LocalizedError {
+public enum MulticodecError: Error {
 
     /// The name provided is invalid.
     ///
@@ -96,7 +96,7 @@ public enum MulticodecError: Error, LocalizedError {
     /// The query name or code is too ambiguous.
     case ambiguousQuery
 
-    public var errorDescription: String? {
+    public var description: String? {
         switch self {
             case .invalidName(let name):
                 return "Invalid multicodec name: \(name)"
@@ -118,12 +118,30 @@ public enum MulticodecError: Error, LocalizedError {
     }
 }
 
-/// Errors for BaseX encoding and decoding.
+/// A list of errors for BaseX encoding and decoding.
 public enum BaseXError: Error {
+
+    /// The base alphabet is invalid.
+    ///
+    /// - Parameter alphabet: The base alphabet in question.
     case invalidAlphabet(alphabet: String)
+
+    /// The character used is too ambiguous.
+    ///
+    /// - Parameter alphabet: The character in question.
     case ambiguousCharacter(alphabet: Character)
+
+    /// The character used is invalid.
+    ///
+    /// - Parameter character: The invalid character.
     case invalidCharacter(character: Character)
+
+    /// The character being used exists more than once.
+    ///
+    /// - Parameter character: The duplicate character.
     case duplicateCharacter(character: Character)
+
+    /// There are an invalid number of characters.
     case invalidNumberOfCharacters
 
     var description: String {
@@ -142,27 +160,70 @@ public enum BaseXError: Error {
     }
 }
 
+/// A list of errors related to prefixes.
 public enum PrefixError: Error {
+
+    /// The prefix is invalid.
     case invalidPrefix
+
+    /// The Multibase string is unable to be decoded.
     case unableToDecodeMultibaseString
+
+    /// The Multibase prefix is not supported.
     case unsupportedMultibasePrefix
+
+    var description: String {
+        switch self {
+            case .invalidPrefix:
+                return "The prefix is invalid."
+            case .unableToDecodeMultibaseString:
+                return "The Multibase string is unable to be decoded."
+            case .unsupportedMultibasePrefix:
+                return "The Multibase prefix is not supported."
+        }
+    }
 }
 
+/// A list of errors related to decoding.
 public enum DecodingError: Error {
-    case invalidCharacter(name: String)
+
+    /// There is an invalid character.
+    ///
+    /// - Parameter character: The invalid character.
+    case invalidCharacter(character: String)
+
+    /// There was an unexpected amount of data at the end.
     case unexpectedEndOfData
+
+    var description: String {
+        switch self {
+            case .invalidCharacter(character: let character):
+                return "There is an invalid character: \(character)."
+            case .unexpectedEndOfData:
+                return "There was an unexpected amount of data at the end."
+        }
+    }
 }
 
-/// Errors that can be thrown by the CID implementation.
-public enum CIDError: Error, LocalizedError {
-    case invalidCID(String)
-    case invalidVersion(UInt64)
+/// A list of errors that can be thrown by the CID implementation.
+public enum CIDError: Error {
+
+    /// The CID is invalid.
+    case invalidCID(message: String)
+
+
+    /// The version number for the CID is invalid.
+    ///
+    /// - Parameter versionNumber: The invalid version number.
+    case invalidVersion(versionNumber: UInt64)
+
+    /// The multihash for CIDv0 is invalid.
     case invalidMultihashForCIDv0
 
-    public var errorDescription: String? {
+    public var description: String? {
         switch self {
             case .invalidCID(let message):
-                return "Invalid CID: \(message)"
+                return "Invalid CID. \(message)"
             case .invalidVersion(let version):
                 return "Invalid or unsupported CID version: \(version)"
             case .invalidMultihashForCIDv0:

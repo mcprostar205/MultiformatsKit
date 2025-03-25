@@ -7,7 +7,22 @@
 
 import Foundation
 
-/// An encoder and decoder, based on the RFC 4648 specification.
+/// An encoder and decoder conforming to the
+/// [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648) specification.
+///
+/// This struct supports encoding and decoding of base-n formats such as Base2, Base8, Base16, and
+/// Base32, using a fixed number of bits per character.
+///
+/// `RFC4648Codec` is typically used in multibase encoding schemes where padding and bit-wise
+/// character representations are standardized.
+///
+/// - Note: While `RFC4648Codec`can take Base64 encoding and decoding, Swift’s `Foundation`
+/// framework already includes native support for Base64 via:\
+/// \- `Data.base64EncodedString()`\
+/// \- `Data(base64Encoded:)`\
+/// \
+/// These native methods are more efficient and should be preferred over a manual
+/// Base64 implementation.
 public struct RFC4648Codec: MultibaseSendable {
 
     /// The name of the base.
@@ -99,7 +114,7 @@ public struct RFC4648Codec: MultibaseSendable {
         for i in 0..<end {
             let character = input[input.index(input.startIndex, offsetBy: i)]
             guard let value = lookupTable[character] else {
-                throw DecodingError.invalidCharacter(name: name)
+                throw DecodingError.invalidCharacter(character: name)
             }
 
             buffer = (buffer << bitsPerCharacter) | value

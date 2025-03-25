@@ -7,13 +7,35 @@
 
 import Foundation
 
-/// A struct for encoding and decoding base-x representations of data.
+/// An encoder and decoder for arbitrary base-n encodings using custom ASCII alphabets.
+///
+/// `BaseX` allows encoding binary data using any user-defined alphabet from 2 to 255
+/// characters long. It supports encoding schemes such as Base58 (Bitcoin, Flickr), Base36,
+/// and others not covered by RFC 4648.
 public struct BaseX: MultibaseSendable {
+
+    /// The alphabet used for encoding and decoding.
     private let alphabet: BaseXAlphabet
+
+    /// The base/radix of the alphabet (e.g. 58 for Base58).
     private let base: Int
+
+    /// The multibase prefix character (e.g. `z` for base58btc). Optional.
     private let prefix: Character?
+
+    /// The leader byte (typically `alphabet.encode[0]`) representing leading zero bytes.
+    ///
+    /// Used to preserve the number of leading zero bytes in encoded form.
     private let leader: UInt8
+
+    /// Precomputed factor: `log(base) / log(256)` used to estimate output size.
+    ///
+    /// Used during encoding to preallocate the correct buffer size.
     private let factor: Double
+
+    /// Precomputed inverse factor (`log(256) / log(base)`) used to estimate input size.
+    ///
+    /// Used during decoding to preallocate the correct buffer size.
     private let inverseFactor: Double
 
     /// Initializes a new `BaseX` encoder/decoder with the specified `BaseXAlphabet`.
@@ -74,8 +96,9 @@ public struct BaseX: MultibaseSendable {
     /// Decodes a base-x encoded string into a `Data` object.
     ///
     /// - Parameter string: The encoded string.
-    /// - Throws: `BaseXError.invalidCharacter` if the string contains non-alphabet characters.
     /// - Returns: The decoded `Data`.
+    ///
+    /// - Throws: `BaseXError.invalidCharacter` if the string contains non-alphabet characters.
     public func decode(_ string: String) throws -> Data {
         guard !string.isEmpty else { return Data() }
 

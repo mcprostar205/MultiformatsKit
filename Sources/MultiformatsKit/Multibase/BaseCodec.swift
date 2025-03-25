@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// A registry of pre-defined setups for ``BaseX`` and ``RFC4648Codec`` that conforms to the
+/// [Multicodec specification](https://github.com/multiformats/multicodec).
 public struct BaseCodec: Sendable {
 
     /// The Base2 Alphabet.
@@ -66,7 +68,7 @@ public struct BaseCodec: Sendable {
             alphabet: "abcdefghijklmnopqrstuvwxyz234567"
         )
     }()
-    
+
     /// The Base32 Alphabet (upper).
     public static let base32Upper: RFC4648Codec = {
         return RFC4648Codec(

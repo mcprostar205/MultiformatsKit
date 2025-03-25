@@ -7,7 +7,37 @@
 
 import Foundation
 
+/// A global registry for managing and validating `Multicodec` definitions at runtime.
 ///
+/// This actor provides a centralized place to:
+/// - Register new codecs with optional overwrite control.
+/// - Retrieve codecs by name or numeric code.
+/// - Wrap and unwrap data using multicodec varint prefixes.
+/// - Filter codecs by tag or status.
+/// - Ensure that codecs are not duplicated or mismatched.
+///
+/// ```swift
+/// let codec = try Multicodec(name: "my-codec", tag: "custom", code: 0x300005)
+/// try await MulticodecRegistry.shared.register(codec)
+///
+/// let data = Data("Hello".utf8)
+/// let wrapped = try await MulticodecRegistry.shared.wrap(codec, rawData: data)
+///
+/// let (unwrappedCodec, unwrappedData) = try await MulticodecRegistry.shared.unwrap(wrapped)
+/// print(unwrappedCodec.name) // "my-codec"
+///
+/// if let string = String(data: unwrappedData, encoding: .utf8) {
+///     print(string) // "Hello"
+/// } else {
+///     print("Failed to decode UTF-8 string")
+/// }
+/// ```
+///
+/// Use this registry when encoding or decoding multicodec-aware content (e.g., with multihash
+/// or CID).
+/// This actor ensures safe concurrent access and prevents duplicate registrations.
+///
+/// - Note: All operations are asynchronous due to actor isolation.
 public actor MulticodecRegistry {
 
     /// A singleton property for all instances.
@@ -25,15 +55,19 @@ public actor MulticodecRegistry {
     ///   - codec: The Multicodec to register.
     ///   - canOverwrite: Determines whether the multicodec can be overwritten.
     ///   Defaults to `false`.
+    ///
+    /// - Throws: `MulticodecError` if there's already an entry of the same name.
     public func register(_ codec: Multicodec, canOverwrite: Bool = false) throws {
         if !canOverwrite {
             if codeTable[codec.code] != nil {
                 throw MulticodecError.duplicateCode(code: codec.code)
             }
+
             if let existing = nameTable[codec.name], existing.code != codec.code {
                 throw MulticodecError.duplicateName(name: codec.name)
             }
         }
+
         codeTable[codec.code] = codec
         nameTable[codec.name] = codec
     }
@@ -43,10 +77,13 @@ public actor MulticodecRegistry {
     /// - Parameters:
     ///   - name: The name of the multicodec. Optional. Defaults to `nil`.
     ///   - code: The multicodec's code. Optional. Defaults to `nil`.
+    ///
+    /// - Throws: `MulticodecError` if there's an ambiguous query.
     public func unregister(name: String? = nil, code: Int? = nil) throws {
         guard (name != nil) != (code != nil) else {
             throw MulticodecError.ambiguousQuery
         }
+
         let codec = try get(name: name, code: code)
         codeTable.removeValue(forKey: codec.code)
         nameTable.removeValue(forKey: codec.name)
@@ -58,6 +95,8 @@ public actor MulticodecRegistry {
     ///   - name: The name of the multicodec. Optional. Defaults to `nil`.
     ///   - code: The multicodec's code. Optional. Defaults to `nil`.
     /// - Returns: The `Mutlticodec` object that contaisn information for the multicodec.
+    ///
+    /// - Throws: `MulticodecError` if there's an ambiguous query.
     public func get(name: String? = nil, code: Int? = nil) throws -> Multicodec {
         guard (name != nil) != (code != nil) else {
             throw MulticodecError.ambiguousQuery
@@ -121,6 +160,7 @@ public actor MulticodecRegistry {
         }).filter { codec in
             let tagMatches = tag?.contains(codec.tag) ?? true
             let statusMatches = status?.contains(codec.status) ?? true
+
             return tagMatches && statusMatches
         }
     }
@@ -130,6 +170,7 @@ public actor MulticodecRegistry {
     /// - Parameter codec: The multicodec to validate.
     public func validate(_ codec: Multicodec) throws {
         let registered = try get(name: codec.name)
+
         guard registered == codec else {
             throw MulticodecError.mismatchedCode(expected: registered.code, found: codec.code)
         }

@@ -7,15 +7,78 @@
 
 import Foundation
 
-/// A self-describing, content-addressed identifier.
+/// A [Content Identifier (CID)](https://github.com/multiformats/cid) is a self-describing
+/// content-addressed identifier.
 ///
-/// This implementation supports both CIDv0 and CIDv1. It provides regular encoding and decoding methods
-/// instead of conforming to Codable.
+/// A CID wraps a content type (``Multicodec``), a content-addressing hash (``Multihash``), and
+/// a version number. CIDs are the foundation of IPFS, IPLD, and other distributed systems built
+/// on content addressing.
+///
+/// This implementation supports:
+/// - CIDv0: Strictly SHA2-256 multihash, Base58BTC-encoded (used in legacy IPFS).
+/// - CIDv1: Flexible version supporting multibase, multicodec, and any valid multihash.
+///
+/// - Note: CIDv0 can only use `sha2-256` as the multihash, must be exactly 34 bytes,
+/// and is always base58btc-encoded.
+///
+/// ### Example (CIDv1)
+/// ```swift
+/// Task {
+///     do {
+///         let text = "Hello, World!"
+///
+///         let cid = CID(version: .v1, content: content)
+///
+///         // Encode the CID.
+///         let encodedCID = cid.encode()
+///         print(encodedCID) // Encoded as: bafybeiadp6jhqmgdkmf7tlyimehev3wog2ghn6n6ojdqtfzmja3a7ky6rm
+///
+///         // Decode the CID.
+///         let decodedCID = try await CID.decode(from: "bafybeiadp6jhqmgdkmf7tlyimehev3wog2ghn6n6ojdqtfzmja3a7ky6rm")
+///         // Decoded as: [0x01, 0x70, 0x12, 0x20, 0x03, 0x7f, 0x92, 0x78, 0x30, 0xc3, 0x53, 0x0b, 0xf9, 0xaf, 0x08, 0x61, 0x0e, 0x4a, 0xee, 0xce, 0x36, 0x8c, 0x76, 0xf9, 0xbe, 0x72, 0x47, 0x09, 0x97, 0x2c, 0x48, 0x36, 0x0f, 0xab, 0x1e, 0x8b]
+///         print(decodedCID)
+///     } catch {
+///         throw error
+///     }
+/// }
+/// ```
+///
+/// ### Example (CIDv0)
+/// ```swift
+/// Task {
+///     do {
+///         let text = "Hello, World!"
+///
+///         let cid = CID(version: .v0, content: content)
+///
+///         // Encode the CID.
+///         let encodedCID = cid.encode()
+///         print(encodedCID) // Encoded as: QmNaJkvSxpCskJLtDajChFFQGsNDu9HCNc6XeWxep5Nf7p
+///
+///         // Decode the CID.
+///         let decodedCID = try await CID.decode(from: "QmNaJkvSxpCskJLtDajChFFQGsNDu9HCNc6XeWxep5Nf7p")
+///         // Decoded as: [0x12, 0x20, 0xdf, 0xfd, 0x60, 0x21, 0xbb, 0x2b, 0xd5, 0xb0, 0xaf, 0x67, 0x62, 0x90, 0x80, 0x9e, 0xc3, 0xa5, 0x31, 0x91, 0xdd, 0x81, 0xc7, 0xf7, 0x0a, 0x4b, 0x28, 0x68, 0x8a, 0x36, 0x21, 0x82, 0x98, 0x6f]
+///         print(decodedCID)
+///     } catch {
+///         throw error
+///     }
+/// }
+/// let data = Data("Legacy content".utf8)
+/// let sha256 = try SHA256Multihash()
+/// let digest = sha256.hash(data)
+///
+/// let cid = try CID(v0WithMultihash: Multihash(codec: sha256.codec, digest: digest))
+/// print(cid.string) // Qm... (base58btc CIDv0 string)
+/// ```
 public struct CID: Sendable, Hashable {
 
     /// The version of the CID.
     public enum CIDVersion: UInt8, Sendable, Hashable {
+
+        /// Version 0.
         case v0 = 0
+
+        /// Version 1.
         case v1 = 1
     }
 
@@ -60,12 +123,17 @@ public struct CID: Sendable, Hashable {
         }
     }
 
-    /// Creates a new CID from its components.
+    /// Creates a new `CID`.
+    ///
+    /// For CIDv0:
+    /// - Only `.v0` is allowed.
+    /// - The multicodec must be `dag-pb` (code `0x70`).
+    /// - The multihash must be a `sha2-256` hash.
     ///
     /// - Parameters:
-    ///   - version: The CID version. For CIDv0, only `.v0` is allowed.
-    ///   - codec: The content-type multicodec. For CIDv0, this must be dag-pb (code 0x70).
-    ///   - multihash: The multihash data. For CIDv0 it must be exactly 34 bytes long with a SHA2‑256 prefix.
+    ///   - version: The CID version.
+    ///   - codec: The content-type multicodec.
+    ///   - multihash: The multihash data.
     ///
     /// - Throws: A `CIDError` if the provided parameters do not form a valid CID.
     public init(version: CIDVersion, codec: Multicodec, multihash: Data) throws {
@@ -78,9 +146,10 @@ public struct CID: Sendable, Hashable {
             }
             // Also, for CIDv0 the codec must be dag-pb (code 0x70).
             guard codec.code == 0x70 else {
-                throw CIDError.invalidCID("For CIDv0, codec must be dag-pb (code 0x70)")
+                throw CIDError.invalidCID(message: "For CIDv0, codec must be dag-pb (code 0x70)")
             }
         }
+
         self.version = version
         self.codec = codec
         self.multihash = multihash
@@ -104,8 +173,9 @@ public struct CID: Sendable, Hashable {
             // Otherwise, decode as a CIDv1 with varint‑encoded fields.
             let (versionValue, versionByteCount) = try Varint.decodeRaw(from: rawData)
             guard versionValue == 1 else {
-                throw CIDError.invalidVersion(versionValue)
+                throw CIDError.invalidVersion(versionNumber: versionValue)
             }
+
             let remainderAfterVersion = rawData.dropFirst(versionByteCount)
             let (codecValue, codecByteCount) = try Varint.decodeRaw(from: remainderAfterVersion)
             let codecCode = Int(codecValue)
@@ -130,19 +200,21 @@ public struct CID: Sendable, Hashable {
         if string.count == 46 && string.hasPrefix("Qm") {
             let base58 = BaseX(alphabet: BaseCodec.base58btc)
             let data = try base58.decode(string)
+
             try await self.init(rawData: data)
         } else {
             // Otherwise, assume a multibase-encoded CIDv1.
             guard let mbPrefix = string.first else {
-                throw CIDError.invalidCID("Empty string")
+                throw CIDError.invalidCID(message: "Empty CID string")
             }
             // In this example, we only support base32-lowercase (prefix "b") for CIDv1.
             if Character(extendedGraphemeClusterLiteral: mbPrefix) == Character(BaseCodec.base32Lower.prefix) {
                 let encodedPart = String(string.dropFirst())
                 let rawData = try BaseCodec.base32Lower.decode(encodedPart)
+
                 try await self.init(rawData: rawData)
             } else {
-                throw CIDError.invalidCID("Unsupported multibase prefix: \(mbPrefix)")
+                throw CIDError.invalidCID(message: "Unsupported multibase prefix: \(mbPrefix)")
             }
         }
     }

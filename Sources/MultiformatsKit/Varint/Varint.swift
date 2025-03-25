@@ -69,7 +69,7 @@ public struct Varint {
 
     /// Decodes a varint, returning the remaining unprocessed data or stream.
     ///
-    /// - Parameter source: A `Data` object, containing the varint.
+    /// - Parameter data: A `Data` object, containing the varint.
     /// - Returns: Tuple of decoded integer and number of bytes read.
     ///
     /// - Throws: `VarintError` if the continuation byte is missing, the integer is too large,
@@ -108,7 +108,7 @@ public struct Varint {
 
     /// Decodes a varint from an `InputStream`, returns value and number of bytes read.
     ///
-    /// - Parameter source: An `InputStream` object, containing the varint.
+    /// - Parameter stream: An `InputStream` object, containing the varint.
     /// - Returns: Tuple of decoded integer and number of bytes read.
     ///
     /// - Throws: `VarintError` if the continuation byte is missing, the integer is too large,
