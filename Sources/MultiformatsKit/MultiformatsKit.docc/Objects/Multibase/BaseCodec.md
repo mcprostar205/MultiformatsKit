@@ -1,4 +1,4 @@
-# ``MultiformatsKit/BaseCodec``
+# ``MultiformatsKit/Multibase``
 
 ## Topics
 

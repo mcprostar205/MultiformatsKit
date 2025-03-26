@@ -40,7 +40,7 @@ This package includes support for the core Multiformats technologies:
 
 ### Multibase
 
-- ``BaseCodec``
+- ``Multibase``
 - ``BaseXAlphabet``
 - ``BaseX``
 - ``RFC4648Codec``

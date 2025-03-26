@@ -1,5 +1,5 @@
 //
-//  BaseCodec.swift
+//  Multibase.swift
 //  MultiformatsKit
 //
 //  Created by Christopher Jr Riley on 2025-03-22.
@@ -9,7 +9,7 @@ import Foundation
 
 /// A registry of pre-defined setups for ``BaseX`` and ``RFC4648Codec`` that conforms to the
 /// [Multicodec specification](https://github.com/multiformats/multicodec).
-public struct BaseCodec: Sendable {
+public struct Multibase: Sendable {
 
     /// The Base2 Alphabet.
     public static let base2: RFC4648Codec = {

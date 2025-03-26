@@ -110,10 +110,10 @@ public struct CID: Sendable, Hashable {
     public var canonicalString: String {
         switch version {
             case .v0:
-                let base58 = BaseX(alphabet: BaseCodec.base58btc)
+                let base58 = BaseX(alphabet: Multibase.base58btc)
                 return base58.encode(rawData)
             case .v1:
-                return BaseCodec.base32Lower.prefix + BaseCodec.base32Lower.encode(rawData)
+                return Multibase.base32Lower.prefix + Multibase.base32Lower.encode(rawData)
         }
     }
 
@@ -231,9 +231,9 @@ public struct CID: Sendable, Hashable {
                 throw CIDError.invalidCID(message: "Empty CID string")
             }
             // In this example, we only support base32-lowercase (prefix "b") for CIDv1.
-            if Character(extendedGraphemeClusterLiteral: mbPrefix) == Character(BaseCodec.base32Lower.prefix) {
+            if Character(extendedGraphemeClusterLiteral: mbPrefix) == Character(Multibase.base32Lower.prefix) {
                 let encodedPart = String(string.dropFirst())
-                let rawData = try BaseCodec.base32Lower.decode(encodedPart)
+                let rawData = try Multibase.base32Lower.decode(encodedPart)
 
                 try await self.init(rawData: rawData)
             } else {
