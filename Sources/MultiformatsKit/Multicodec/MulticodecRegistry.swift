@@ -58,10 +58,10 @@ public actor MulticodecRegistry {
     /// - Parameters:
     ///   - codec: The Multicodec to register.
     ///   - canOverwrite: Determines whether the multicodec can be overwritten.
-    ///   Defaults to `false`.
+    ///   Defaults to `true`.
     ///
     /// - Throws: `MulticodecError` if there's already an entry of the same name.
-    public func register(_ codec: Multicodec, canOverwrite: Bool = false) throws {
+    public func register(_ codec: Multicodec, canOverwrite: Bool = true) throws {
         if !canOverwrite {
             if codeTable[codec.code] != nil {
                 throw MulticodecError.duplicateCode(code: codec.code)
