@@ -20,8 +20,9 @@
 
 This package enables content-addressing, self-describing data structures, and CID generation — all with `Sendable`-safe Swift code.
 
-## Quick Example
+## Quick Examples
 
+### CID
 ```swift
 import MultiformatsKit
 
@@ -41,6 +42,62 @@ Task {
 }
 ```
 
+### Multibase
+```swift
+import MultiformatsKit
+
+do {
+    let base58 = Multibase.base58btc
+    let result = multibase.encode("Hello from Multibase!")
+    
+    print(result) Will return as "4QBebtZN9VvWV59DoFiqFLTfq2CJp".
+} catch {
+    throw error
+}
+```
+
+### Multicodec
+
+```swift
+do {
+    let dagPB = try Multicodec(name: "dag-pb", tag: "dag-pb", code: 0x70, status: .permanent)
+    try await MulticodecRegistry.shared.register(dagPB)
+    
+    let dagPBEntry = MulticodecRegistry.shared.get(name: "dag-pb")
+    let data = Data("Hello from Multicodec!".utf8)
+    let wrapped = try await Multicodec.shared.wrap(dagPBEntry, rawData: data)
+    
+    let (unwrappedCodec, unwrappedData) = try await MulticodecRegistry.shared.unwrap(wrapped)
+    print(unwrappedCodec.name) // "dag-pb"
+    
+    if let string = String(data: unwrappedData, encoding: .utf8) {
+        print(string) // Will return as "dag-pb".
+    } else {
+        print("Failed to decode UTF-8 string")
+    }
+    
+} catch {
+    throw error
+}
+```
+
+### Multihash
+
+```swift
+Task {
+    do {
+        let data = Data("hello".utf8)
+        let algorithm = try SHA256Multihash()
+        try await MultihashFactory.shared.register(algorithm)
+
+        let multihash = try await MultihashFactory.shared.hash(using: "sha2-256", data: data)
+        // Prints as [0xdd, 0x7d, 0x93, 0xb5, 0xcc, 0xe6, 0x1c, 0x9e, 0xf6, 0x36, 0x5b, 0xf0, 0x9b, 0x41, 0xa8, 0xb0, 0x6f, 0xce, 0x69, 0x9a, 0xf4, 0x58, 0x76, 0xe3, 0x27, 0x0c, 0xb4, 0x65, 0xa1, 0x7a, 0xec, 0xb4]
+        print(multihash.encoded.map { String(format: "%02x", $0) }.joined())
+    } catch {
+        throw error
+    }
+}
+```
 
 ## Features
 
