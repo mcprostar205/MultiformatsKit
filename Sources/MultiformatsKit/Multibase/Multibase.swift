@@ -32,11 +32,13 @@ public struct Multibase: Sendable {
     }()
 
     /// The Base10 Alphabet.
-    public static let base10: BaseXAlphabet = {
-        return BaseXAlphabet(
+    public static let base10: BaseX = {
+        let baseCodec = BaseXAlphabet(
             "0123456789",
             prefix: "9"
         )
+
+        return BaseX(alphabet: baseCodec)
     }()
 
     /// The Base16 Alphabet (lower).
@@ -150,34 +152,42 @@ public struct Multibase: Sendable {
     }()
 
     /// The Base36 Alphabet (lower).
-    public static let base36: BaseXAlphabet = {
-        return BaseXAlphabet(
+    public static let base36: BaseX = {
+        let baseCodec = BaseXAlphabet(
             "0123456789abcdefghijklmnopqrstuvwxyz",
             prefix: "k"
         )
+
+        return BaseX(alphabet: baseCodec)
     }()
 
     /// The Base36 Alphabet (upper).
-    public static let base36Upper: BaseXAlphabet = {
-        return BaseXAlphabet(
+    public static let base36Upper: BaseX = {
+        let baseCodec = BaseXAlphabet(
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
             prefix: "K"
         )
+
+        return BaseX(alphabet: baseCodec)
     }()
 
     /// The Base58 Alphabet (BTC).
-    public static let base58btc: BaseXAlphabet = {
-        return BaseXAlphabet(
+    public static let base58btc: BaseX = {
+        let baseCodec = BaseXAlphabet(
             "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
             prefix: "z"
         )
+
+        return BaseX(alphabet: baseCodec)
     }()
 
     /// The Base58 Alphabet (Flickr).
-    public static let base58flickr: BaseXAlphabet = {
-        return BaseXAlphabet(
+    public static let base58flickr: BaseX = {
+        let baseCodec = BaseXAlphabet(
             "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ",
             prefix: "Z"
         )
+
+        return BaseX(alphabet: baseCodec)
     }()
 }

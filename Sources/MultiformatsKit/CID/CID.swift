@@ -110,7 +110,7 @@ public struct CID: Sendable, Hashable {
     public var canonicalString: String {
         switch version {
             case .v0:
-                let base58 = BaseX(alphabet: Multibase.base58btc)
+                let base58 = Multibase.base58btc
                 return base58.encode(rawData)
             case .v1:
                 return Multibase.base32Lower.prefix + Multibase.base32Lower.encode(rawData)
