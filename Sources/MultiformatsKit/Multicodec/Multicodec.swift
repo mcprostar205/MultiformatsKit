@@ -18,7 +18,7 @@ import Foundation
 /// optional description. The codec can be used to wrap raw binary data with a varint-encoded
 /// prefix, and to unwrap that data later.
 ///
-/// Use `MulticodecRegistry.shared` to register and retrieve codecs globally, or to validate
+/// Use ``MulticodecRegistry/shared`` to register and retrieve codecs globally, or to validate
 /// and organize codecs by tag or status.
 ///
 /// ### Example
