@@ -118,8 +118,8 @@ public enum MulticodecError: Error {
     }
 }
 
-/// A list of errors for BaseX encoding and decoding.
-public enum BaseXError: Error {
+/// A list of errors for BaseN encoding and decoding.
+public enum BaseNError: Error {
 
     /// The base alphabet is invalid.
     ///
@@ -147,13 +147,13 @@ public enum BaseXError: Error {
     var description: String {
         switch self {
             case .invalidAlphabet(let alphabet):
-                return "Invalid BaseX alphabet: \(alphabet)."
+                return "Invalid BaseN alphabet: \(alphabet)."
             case .ambiguousCharacter(alphabet: let alphabet):
                 return "\(alphabet) is ambiguous. Please use a different alphabet."
             case .invalidCharacter(character: let character):
-                return "Invalid BaseX character: \(character)."
+                return "Invalid BaseN character: \(character)."
             case .duplicateCharacter(character: let character):
-                return "Duplicate BaseX character: \(character)."
+                return "Duplicate BaseN character: \(character)."
             case .invalidNumberOfCharacters:
                 return "The number of characters in the input is invalid."
         }

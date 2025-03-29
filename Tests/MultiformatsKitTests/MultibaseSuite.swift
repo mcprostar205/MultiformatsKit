@@ -11,7 +11,7 @@ import Testing
 
 @Suite("Multibase Suite") struct MultibaseSuite {
 
-    @Suite("BaseX Tests") struct BaseXTests {
+    @Suite("BaseN Tests") struct BaseNTests {
         @Test("Roundtrips between decoding and encoding base32.")
         func base32RoundTrip() async throws {
             guard let text = "I'm feeling great today!".data(using: .utf8) else { return }

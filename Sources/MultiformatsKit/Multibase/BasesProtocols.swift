@@ -20,17 +20,17 @@ public typealias MultibaseSendable = MultibaseEncoder & MultibaseDecoder & Senda
 /// Multibase encoder protocol that encodes data into a multibase string.
 public protocol MultibaseEncoder: Sendable {
 
-    /// Encodes the given byte array into a base-x string.
+    /// Encodes the given byte array into a base-n string.
     ///
     /// - Parameter bytes: The data to encode.
-    /// - Returns: A base-x encoded `String`.
+    /// - Returns: A base-n encoded `String`.
     func encode(_ bytes: Data) -> String
 }
 
 /// Multibase decoder protocol that decodes multibase strings into bytes.
 public protocol MultibaseDecoder: Sendable {
 
-    /// Decodes a base-x encoded string into a `Data` object.
+    /// Decodes a base-n encoded string into a `Data` object.
     ///
     /// - Parameter text: The encoded string.
     /// - Returns: The decoded `Data` object.

@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A registry of pre-defined setups for ``BaseX`` and ``RFC4648Codec`` that conforms to the
+/// A registry of pre-defined setups for ``BaseN`` and ``RFC4648Codec`` that conforms to the
 /// [Multicodec specification](https://github.com/multiformats/multicodec).
 public struct Multibase: Sendable {
 
@@ -32,13 +32,13 @@ public struct Multibase: Sendable {
     }()
 
     /// The Base10 Alphabet.
-    public static let base10: BaseX = {
-        let baseCodec = BaseXAlphabet(
+    public static let base10: BaseN = {
+        let baseCodec = BaseNAlphabet(
             "0123456789",
             prefix: "9"
         )
 
-        return BaseX(alphabet: baseCodec)
+        return BaseN(alphabet: baseCodec)
     }()
 
     /// The Base16 Alphabet (lower).
@@ -152,42 +152,42 @@ public struct Multibase: Sendable {
     }()
 
     /// The Base36 Alphabet (lower).
-    public static let base36: BaseX = {
-        let baseCodec = BaseXAlphabet(
+    public static let base36: BaseN = {
+        let baseCodec = BaseNAlphabet(
             "0123456789abcdefghijklmnopqrstuvwxyz",
             prefix: "k"
         )
 
-        return BaseX(alphabet: baseCodec)
+        return BaseN(alphabet: baseCodec)
     }()
 
     /// The Base36 Alphabet (upper).
-    public static let base36Upper: BaseX = {
-        let baseCodec = BaseXAlphabet(
+    public static let base36Upper: BaseN = {
+        let baseCodec = BaseNAlphabet(
             "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
             prefix: "K"
         )
 
-        return BaseX(alphabet: baseCodec)
+        return BaseN(alphabet: baseCodec)
     }()
 
     /// The Base58 Alphabet (BTC).
-    public static let base58btc: BaseX = {
-        let baseCodec = BaseXAlphabet(
+    public static let base58btc: BaseN = {
+        let baseCodec = BaseNAlphabet(
             "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
             prefix: "z"
         )
 
-        return BaseX(alphabet: baseCodec)
+        return BaseN(alphabet: baseCodec)
     }()
 
     /// The Base58 Alphabet (Flickr).
-    public static let base58flickr: BaseX = {
-        let baseCodec = BaseXAlphabet(
+    public static let base58flickr: BaseN = {
+        let baseCodec = BaseNAlphabet(
             "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ",
             prefix: "Z"
         )
 
-        return BaseX(alphabet: baseCodec)
+        return BaseN(alphabet: baseCodec)
     }()
 }

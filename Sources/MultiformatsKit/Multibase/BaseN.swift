@@ -1,5 +1,5 @@
 //
-//  BaseX.swift
+//  BaseN.swift
 //  MultiformatsKit
 //
 //  Created by Christopher Jr Riley on 2025-03-22.
@@ -9,13 +9,13 @@ import Foundation
 
 /// An encoder and decoder for arbitrary base-n encodings using custom ASCII alphabets.
 ///
-/// `BaseX` allows encoding binary data using any user-defined alphabet from 2 to 255
+/// `BaseN` allows encoding binary data using any user-defined alphabet from 2 to 255
 /// characters long. It supports encoding schemes such as Base58 (Bitcoin, Flickr), Base36,
 /// and others not covered by RFC 4648.
-public struct BaseX: MultibaseSendable {
+public struct BaseN: MultibaseSendable {
 
     /// The alphabet used for encoding and decoding.
-    private let alphabet: BaseXAlphabet
+    private let alphabet: BaseNAlphabet
 
     /// The base/radix of the alphabet (e.g. 58 for Base58).
     private let base: Int
@@ -38,10 +38,10 @@ public struct BaseX: MultibaseSendable {
     /// Used during decoding to preallocate the correct buffer size.
     private let inverseFactor: Double
 
-    /// Initializes a new `BaseX` encoder/decoder with the specified `BaseXAlphabet`.
+    /// Initializes a new `BaseN` encoder/decoder with the specified `BaseNAlphabet`.
     ///
-    /// - Parameter alphabet: A `BaseXAlphabet` defining the character set used for encoding.
-    public init(alphabet: BaseXAlphabet) {
+    /// - Parameter alphabet: A `BaseNAlphabet` defining the character set used for encoding.
+    public init(alphabet: BaseNAlphabet) {
         self.alphabet = alphabet
         self.base = alphabet.base
         self.prefix = alphabet.prefix
@@ -50,10 +50,10 @@ public struct BaseX: MultibaseSendable {
         self.inverseFactor = log(256) / log(Double(base))
     }
 
-    /// Encodes the given `Data` object into a base-x string.
+    /// Encodes the given `Data` object into a base-n string.
     ///
     /// - Parameter data: The data to encode.
-    /// - Returns: A base-x encoded string.
+    /// - Returns: A base-n encoded string.
     public func encode(_ data: Data) -> String {
         guard !data.isEmpty else { return "" }
 
@@ -93,12 +93,12 @@ public struct BaseX: MultibaseSendable {
         return output
     }
 
-    /// Decodes a base-x encoded string into a `Data` object.
+    /// Decodes a base-n encoded string into a `Data` object.
     ///
     /// - Parameter string: The encoded `String`.
     /// - Returns: The decoded `Data` object.
     ///
-    /// - Throws: `BaseXError.invalidCharacter` if the string contains non-alphabet characters.
+    /// - Throws: `BaseNError.invalidCharacter` if the string contains non-alphabet characters.
     public func decode(_ string: String) throws -> Data {
         guard !string.isEmpty else { return Data() }
 
@@ -106,7 +106,7 @@ public struct BaseX: MultibaseSendable {
 
         if let prefix = prefix?.asciiValue, !input.isEmpty {
             guard input[0] == prefix else {
-                throw BaseXError.invalidCharacter(character: Character(UnicodeScalar(input[0])))
+                throw BaseNError.invalidCharacter(character: Character(UnicodeScalar(input[0])))
             }
             input.removeFirst()
         }
@@ -123,7 +123,7 @@ public struct BaseX: MultibaseSendable {
         for byte in input[zeroes...] {
             let carry = alphabet.decode[Int(byte)]
             guard carry != 255 else {
-                throw BaseXError.invalidCharacter(character: Character(UnicodeScalar(byte)))
+                throw BaseNError.invalidCharacter(character: Character(UnicodeScalar(byte)))
             }
 
             var carryInt = Int(carry)

@@ -25,7 +25,7 @@ This package includes support for the core Multiformats technologies:
 ### Use Cases
 
 - Creating and parsing [CIDs](https://github.com/multiformats/cid) (v0 or v1) for use in IPFS, IPLD, libp2p, or any distributed system.
-- Encoding data using [Multibase](https://github.com/multiformats/multibase)-compatible formats such as base58btc, base32, base16, or custom base-x alphabets.
+- Encoding data using [Multibase](https://github.com/multiformats/multibase)-compatible formats such as base58btc, base32, base16, or custom base-n alphabets.
 - Registering and resolving [Multicodec](https://github.com/multiformats/multicodec) identifiers.
 - Computing [Multihash](https://github.com/multiformats/multihash)-compliant digests using plug-and-play hashing algorithms.
 - Working with varint-prefixed data formats or building protocol parsers that follow Multiformats conventions.
@@ -41,8 +41,8 @@ This package includes support for the core Multiformats technologies:
 ### Multibase
 
 - ``Multibase``
-- ``BaseXAlphabet``
-- ``BaseX``
+- ``BaseNAlphabet``
+- ``BaseN``
 - ``RFC4648Codec``
 
 ### Multicodec
@@ -65,7 +65,7 @@ This package includes support for the core Multiformats technologies:
 ### Errors
 
 - ``CIDError``
-- ``BaseXError``
+- ``BaseNError``
 - ``MulticodecError``
 - ``DecodingError``
 - ``PrefixError``

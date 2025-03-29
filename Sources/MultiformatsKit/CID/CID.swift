@@ -227,8 +227,8 @@ public struct CID: Sendable, Hashable {
     public init(string: String) async throws {
         // Heuristic for CIDv0: 46-character strings starting with "Qm".
         if string.count == 46 && string.hasPrefix("Qm") {
-            let alphabet = BaseXAlphabet("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
-            let base58 = BaseX(alphabet: alphabet)
+            let alphabet = BaseNAlphabet("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+            let base58 = BaseN(alphabet: alphabet)
             let data = try base58.decode(string)
 
             try await self.init(rawData: data)
