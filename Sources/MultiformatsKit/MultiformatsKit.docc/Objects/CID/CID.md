@@ -4,8 +4,8 @@
 
 ### Creating a CID from Content
 
-- ``init(version:codec:multihash:)
-- ``init(version:content:)
+- ``init(version:codec:multihash:)``
+- ``init(version:content:)``
 
 ### Decoding an Existing CID
 
