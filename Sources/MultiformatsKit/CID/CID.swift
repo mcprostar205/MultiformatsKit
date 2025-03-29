@@ -7,8 +7,7 @@
 
 import Foundation
 
-/// A [Content Identifier (CID)](https://github.com/multiformats/cid) is a self-describing
-/// content-addressed identifier.
+/// A self-describing content-addressed identifier.
 ///
 /// A CID wraps a content type (``Multicodec``), a content-addressing hash (``Multihash``), and
 /// a version number. CIDs are the foundation of IPFS, IPLD, and other distributed systems built
@@ -177,9 +176,17 @@ public struct CID: Sendable, Hashable {
         try self.init(version: version, codec: dagPBCodec, multihash: multihash.encoded)
     }
 
-    /// Creates a new CID from its raw binary representation.
+    /// Initializes a `CID` from its raw binary representation.
     ///
-    /// - Parameter rawData: The binary CID.
+    /// This initializer automatically detects and decodes one of the following:
+    /// - **CIDv0**: If the data is exactly 34 bytes and starts with a valid `sha2-256`
+    /// multihash `(0x12, 0x20`), the CID is treated as version 0 with the `dag-pb` codec.
+    /// - **CIDv1**: Otherwise, it parses a CIDv1 with varint-encoded fields:
+    /// [version] + [codec] + [multihash].
+    ///
+    /// The raw data must match the format produced by a prior `.rawData` encoding of a CID.
+    ///
+    /// - Parameter rawData: A binary representation of a CID (either v0 or v1).
     ///
     /// - Throws: A `CIDError` if the binary data does not represent a valid CID.
     public init(rawData: Data) async throws {
