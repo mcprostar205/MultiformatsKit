@@ -118,7 +118,7 @@ public enum MulticodecError: Error {
     }
 }
 
-/// A list of errors for BaseN encoding and decoding.
+/// A list of errors for ``BaseN`` encoding and decoding.
 public enum BaseNError: Error {
 
     /// The base alphabet is invalid.
