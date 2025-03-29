@@ -114,7 +114,7 @@ public struct RFC4648Codec: MultibaseSendable {
         for i in 0..<end {
             let character = input[input.index(input.startIndex, offsetBy: i)]
             guard let value = lookupTable[character] else {
-                throw DecodingError.invalidCharacter(character: character)
+                throw BaseNDecodingError.invalidCharacter(character: character)
             }
 
             buffer = (buffer << bitsPerCharacter) | value
@@ -127,7 +127,7 @@ public struct RFC4648Codec: MultibaseSendable {
         }
 
         if bits >= bitsPerCharacter || ((buffer << (8 - bits)) & 0xFF) != 0 {
-            throw DecodingError.unexpectedEndOfData
+            throw BaseNDecodingError.unexpectedEndOfData
         }
 
         return output

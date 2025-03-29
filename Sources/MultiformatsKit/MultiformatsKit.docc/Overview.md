@@ -67,6 +67,6 @@ This package includes support for the core Multiformats technologies:
 - ``CIDError``
 - ``BaseNError``
 - ``MulticodecError``
-- ``DecodingError``
+- ``BaseNDecodingError``
 - ``PrefixError``
 - ``VarintError``

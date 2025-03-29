@@ -184,8 +184,8 @@ public enum PrefixError: Error {
     }
 }
 
-/// A list of errors related to decoding.
-public enum DecodingError: Error {
+/// A list of errors related to BaseN decoding.
+public enum BaseNDecodingError: Error {
 
     /// There is an invalid character.
     ///
