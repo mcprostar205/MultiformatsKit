@@ -52,7 +52,7 @@ do {
     let base58 = Multibase.base58btc
     let result = multibase.encode("Hello from Multibase!")
     
-    print(result) Will return as "4QBebtZN9VvWV59DoFiqFLTfq2CJp".
+    print(result) // Will return as "4QBebtZN9VvWV59DoFiqFLTfq2CJp".
 } catch {
     throw error
 }
