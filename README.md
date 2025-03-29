@@ -6,6 +6,8 @@
 
 <div align="center">
 
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FATProtoKit%2FMultiformatsKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ATProtoKit/MultiformatsKit)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FATProtoKit%2FMultiformatsKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ATProtoKit/MultiformatsKit)
 [![GitHub Repo stars](https://img.shields.io/github/stars/ATProtoKit/MultiformatsKit?style=flat&logo=github)](https://github.com/ATProtoKit/MultiformatsKit)
 
 </div>
