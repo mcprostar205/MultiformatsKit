@@ -33,7 +33,7 @@ Task {
         let cid = try await CID(content: "Hello, World!")
 
         // CIDv1 encoded with base32
-        print("CIDv1:", cid.encode())
+        print("CIDv1:", try cid.encode())
 
         // Decode back into a CID
         let decoded = try await CID.decode(from: cid.encode())

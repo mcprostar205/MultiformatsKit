@@ -29,7 +29,7 @@ import Foundation
 ///         let cid = CID(version: .v1, content: content)
 ///
 ///         // Encode the CID.
-///         let encodedCID = cid.encode()
+///         let encodedCID = try cid.encode()
 ///         print(encodedCID) // Encoded as: bafybeiadp6jhqmgdkmf7tlyimehev3wog2ghn6n6ojdqtfzmja3a7ky6rm
 ///
 ///         // Decode the CID.
@@ -51,7 +51,7 @@ import Foundation
 ///         let cid = CID(version: .v0, content: content)
 ///
 ///         // Encode the CID.
-///         let encodedCID = cid.encode()
+///         let encodedCID = try cid.encode()
 ///         print(encodedCID) // Encoded as: QmNaJkvSxpCskJLtDajChFFQGsNDu9HCNc6XeWxep5Nf7p
 ///
 ///         // Decode the CID.
@@ -86,19 +86,20 @@ public struct CID: Sendable, Hashable {
 
     /// The raw binary representation of the CID.
     public var rawData: Data {
-        switch version {
-            case .v0:
-                // For CIDv0, the raw data is simply the multihash.
-                return multihash
-            case .v1:
-                // For CIDv1, encode as [varint(version)] + [varint(codec code)] + [multihash].
-                var data = Data()
-                data.append((try! Varint.encode(UInt64(version.rawValue))))
+        get throws {
+            switch version {
+                case .v0:
+                    return multihash
+                case .v1:
+                    let versionEncoded = try Varint.encode(UInt64(version.rawValue))
+                    let codecEncoded = try Varint.encode(UInt64(codec.code))
 
-                let codecVarint = try! Varint.encode(UInt64(codec.code))
-                data.append(codecVarint)
-                data.append(multihash)
-                return data
+                    var data = Data()
+                    data.append(versionEncoded)
+                    data.append(codecEncoded)
+                    data.append(multihash)
+                    return data
+            }
         }
     }
 
@@ -106,13 +107,18 @@ public struct CID: Sendable, Hashable {
     ///
     /// For CIDv0, this is the base58btc-encoded multihash.
     /// For CIDv1, this is the multibase (base32-lowercase) encoded string.
+    /// Returns the canonical string representation of the CID.
+    ///
+    /// - Throws: A `CIDError` if encoding fails.
+    /// - Returns: The string representation.
     public var canonicalString: String {
-        switch version {
-            case .v0:
-                let base58 = Multibase.base58btc
-                return base58.encode(rawData)
-            case .v1:
-                return Multibase.base32Lower.prefix + Multibase.base32Lower.encode(rawData)
+        get throws {
+            switch version {
+                case .v0:
+                    return Multibase.base58btc.encode(try rawData)
+                case .v1:
+                    return Multibase.base32Lower.prefix + Multibase.base32Lower.encode(try rawData)
+            }
         }
     }
 
@@ -252,8 +258,10 @@ public struct CID: Sendable, Hashable {
     /// Encodes the CID into its canonical string representation.
     ///
     /// - Returns: A string representing the CID.
-    public func encode() -> String {
-        return canonicalString
+    ///
+    /// - Throws: A `CIDError` if encoding fails.
+    public func encode() throws -> String {
+        return try canonicalString
     }
 
     /// Decodes a CID from its string representation.
