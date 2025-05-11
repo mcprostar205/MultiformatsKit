@@ -8,7 +8,7 @@
 import Foundation
 
 /// A list of errors related to varint encoding and decoding.
-public enum VarintError: Error {
+public enum VarintError: Error, LocalizedError, CustomStringConvertible {
 
     /// The integer is not an unsigned integer.
     case negativeInteger
@@ -33,7 +33,7 @@ public enum VarintError: Error {
     /// - Parameter byteIndex: The index of the byte.
     case missingContinuationByte(byteIndex: Int)
 
-    public var description: String? {
+    public var errorDescription: String? {
         switch self {
             case .negativeInteger:
                 return "Integer is negative. Varint only supports unsigned integers."
@@ -51,10 +51,14 @@ public enum VarintError: Error {
                 return "Expected continuation byte at index \(byteIndex), but none was available."
         }
     }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 /// A list of errors related to Multicodec operations.
-public enum MulticodecError: Error {
+public enum MulticodecError: Error, LocalizedError {
 
     /// The name provided is invalid.
     ///
@@ -96,7 +100,7 @@ public enum MulticodecError: Error {
     /// The query name or code is too ambiguous.
     case ambiguousQuery
 
-    public var description: String? {
+    public var errorDescription: String? {
         switch self {
             case .invalidName(let name):
                 return "Invalid multicodec name: \(name)"
@@ -116,10 +120,14 @@ public enum MulticodecError: Error {
                 return "You must specify exactly one of name or code."
         }
     }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 /// A list of errors for ``BaseN`` encoding and decoding.
-public enum BaseNError: Error {
+public enum BaseNError: Error, LocalizedError {
 
     /// The base alphabet is invalid.
     ///
@@ -144,7 +152,7 @@ public enum BaseNError: Error {
     /// There are an invalid number of characters.
     case invalidNumberOfCharacters
 
-    var description: String {
+    var errorDescription: String {
         switch self {
             case .invalidAlphabet(let alphabet):
                 return "Invalid BaseN alphabet: \(alphabet)."
@@ -158,10 +166,14 @@ public enum BaseNError: Error {
                 return "The number of characters in the input is invalid."
         }
     }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 /// A list of errors related to prefixes.
-public enum PrefixError: Error {
+public enum PrefixError: Error, LocalizedError {
 
     /// The prefix is invalid.
     case invalidPrefix
@@ -172,7 +184,7 @@ public enum PrefixError: Error {
     /// The Multibase prefix is not supported.
     case unsupportedMultibasePrefix
 
-    var description: String {
+    var errorDescription: String {
         switch self {
             case .invalidPrefix:
                 return "The prefix is invalid."
@@ -182,10 +194,14 @@ public enum PrefixError: Error {
                 return "The Multibase prefix is not supported."
         }
     }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 /// A list of errors related to BaseN decoding.
-public enum BaseNDecodingError: Error {
+public enum BaseNDecodingError: Error, LocalizedError {
 
     /// There is an invalid character.
     ///
@@ -195,7 +211,7 @@ public enum BaseNDecodingError: Error {
     /// There was an unexpected amount of data at the end.
     case unexpectedEndOfData
 
-    var description: String {
+    var errorDescription: String {
         switch self {
             case .invalidCharacter(character: let character):
                 return "There is an invalid character: \(character)."
@@ -203,10 +219,14 @@ public enum BaseNDecodingError: Error {
                 return "There was an unexpected amount of data at the end."
         }
     }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 /// A list of errors that can be thrown by the CID implementation.
-public enum CIDError: Error {
+public enum CIDError: Error, LocalizedError {
 
     /// The CID is invalid.
     case invalidCID(message: String)
@@ -224,7 +244,7 @@ public enum CIDError: Error {
     /// The multihash for CIDv0 is invalid.
     case invalidMultihashForCIDv0
 
-    public var description: String? {
+    public var errorDescription: String? {
         switch self {
             case .invalidCID(let message):
                 return "Invalid CID. \(message)"
@@ -235,5 +255,9 @@ public enum CIDError: Error {
             case .invalidMultihashForCIDv0:
                 return "CIDv0 must be a valid SHA2-256 multihash: exactly 34 bytes long with prefix 0x12, 0x20."
         }
+    }
+
+    public var description: String {
+        return errorDescription ?? String(describing: self)
     }
 }
