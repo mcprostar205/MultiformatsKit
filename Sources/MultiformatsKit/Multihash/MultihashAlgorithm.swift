@@ -18,7 +18,7 @@ import Foundation
 public protocol MultihashAlgorithm: Sendable {
 
     /// The `Multicodec` that identifies this hash algorithm.
-    var codec: Multicodec { get }
+    var codec: Multicodec.Codec { get }
 
     /// Hashes the input data and returns the resulting digest.
     ///

@@ -43,7 +43,6 @@ public actor MultihashFactory {
     ///
     /// - Throws: If the codec associated with the algorithm is already registered and conflicts.
     public func register(_ algorithm: MultihashAlgorithm) async throws {
-        try await MulticodecRegistry.shared.register(algorithm.codec)
         algorithms[algorithm.codec.name] = algorithm
     }
 

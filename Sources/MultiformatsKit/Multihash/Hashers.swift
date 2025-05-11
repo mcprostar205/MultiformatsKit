@@ -15,11 +15,11 @@ import Crypto
 public struct SHA256Multihash: MultihashAlgorithm {
 
     /// The `Multicodec` definition for `sha2-256`.
-    public let codec: Multicodec
+    public let codec: Multicodec.Codec
 
     /// Initializes the SHA-256 multihash algorithm.
-    public init() throws {
-        self.codec = try Multicodec(name: "sha2-256", tag: "sha2", code: 0x12)
+    public init() {
+        self.codec = Multicodec.Codec(name: "sha2-256", codePrefix: 0x12)
     }
 
     /// Hashes the given data using SHA-256.

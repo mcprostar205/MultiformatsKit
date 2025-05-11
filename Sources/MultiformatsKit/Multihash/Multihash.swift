@@ -20,7 +20,7 @@ import Foundation
 public struct Multihash: Hashable, Codable, Sendable {
 
     /// The multicodec indicating which hash function was used.
-    public let codec: Multicodec
+    public let codec: Multicodec.Codec
 
     /// The raw digest output from the hash function.
     public let digest: Data
@@ -28,7 +28,7 @@ public struct Multihash: Hashable, Codable, Sendable {
     /// Returns the multihash in its encoded form:
     /// `[varint(codec code)] + [varint(digest length)] + [digest bytes]`.
     public var encoded: Data {
-        let code = try? Varint.encode(UInt64(codec.code))
+        let code = try? Varint.encode(UInt64(codec.codePrefix))
         let length = try? Varint.encode(UInt64(digest.count))
         return (code ?? Data()) + (length ?? Data()) + digest
     }
@@ -38,7 +38,7 @@ public struct Multihash: Hashable, Codable, Sendable {
     /// - Parameters:
     ///   - codec: The multicodec describing the hash function.
     ///   - digest: The raw digest data.
-    public init(codec: Multicodec, digest: Data) {
+    public init(codec: Multicodec.Codec, digest: Data) {
         self.codec = codec
         self.digest = digest
     }
@@ -50,7 +50,15 @@ public struct Multihash: Hashable, Codable, Sendable {
     ///
     /// - Throws: If the multicodec is not registered, or decoding fails.
     public static func decode(_ data: Data) async throws -> Multihash {
-        let (codec, digest) = try await MulticodecRegistry.shared.unwrap(data)
-        return Multihash(codec: codec, digest: digest)
+        let (code, bytesRead) = try Varint.decodeRaw(from: data)
+        let remaining = data.dropFirst(bytesRead)
+
+        let foundCode = Multicodec.allCases.first { $0.codePrefix == Int(code) }
+
+        guard let foundCode = foundCode else {
+            throw MulticodecError.notRegistered(id: String(code))
+        }
+
+        return Multihash(codec: foundCode, digest: Data(remaining))
     }
 }

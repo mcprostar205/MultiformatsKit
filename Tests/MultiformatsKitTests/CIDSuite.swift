@@ -15,7 +15,7 @@ import Testing
 
         let cid = try await CID(content: text)
 
-        let encodedCID = cid.encode()
+        let encodedCID = try cid.encode()
         try #require(encodedCID == "bafybeifhhzii2au6jnkhjr3ng3r5s7pn3td7xzbos547rlqonpgc76fde4", "The encoded string should match the original text.")
 
         let decoded = try await CID.decode(from: cid.encode())

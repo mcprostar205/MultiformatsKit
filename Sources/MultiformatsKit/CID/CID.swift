@@ -79,7 +79,7 @@ public struct CID: Sendable, Hashable {
     public let version: CIDVersion
 
     /// The content-type multicodec.
-    public let codec: Multicodec
+    public let codec: Multicodec.Codec
 
     /// The multihash of the addressed content.
     public let multihash: Data
@@ -92,7 +92,7 @@ public struct CID: Sendable, Hashable {
                     return multihash
                 case .v1:
                     let versionEncoded = try Varint.encode(UInt64(version.rawValue))
-                    let codecEncoded = try Varint.encode(UInt64(codec.code))
+                    let codecEncoded = try Varint.encode(UInt64(codec.codePrefix))
 
                     var data = Data()
                     data.append(versionEncoded)
@@ -107,7 +107,6 @@ public struct CID: Sendable, Hashable {
     ///
     /// For CIDv0, this is the base58btc-encoded multihash.
     /// For CIDv1, this is the multibase (base32-lowercase) encoded string.
-    /// Returns the canonical string representation of the CID.
     ///
     /// - Throws: A `CIDError` if encoding fails.
     /// - Returns: The string representation.
@@ -135,7 +134,7 @@ public struct CID: Sendable, Hashable {
     ///   - multihash: The multihash data.
     ///
     /// - Throws: A `CIDError` if the provided parameters do not form a valid CID.
-    public init(version: CIDVersion, codec: Multicodec, multihash: Data) throws {
+    public init(version: CIDVersion, codec: Multicodec.Codec, multihash: Data) throws {
         if version == .v0 {
             // For CIDv0, validate the multihash:
             guard multihash.count == 34,
@@ -144,7 +143,7 @@ public struct CID: Sendable, Hashable {
                 throw CIDError.invalidMultihashForCIDv0
             }
             // Also, for CIDv0 the codec must be dag-pb (code 0x70).
-            guard codec.code == 0x70 else {
+            guard codec.codePrefix == 0x70 else {
                 throw CIDError.invalidCID(message: "For CIDv0, codec must be dag-pb (code 0x70)")
             }
         }
@@ -160,7 +159,7 @@ public struct CID: Sendable, Hashable {
     /// hasn't been added yet.
     ///
     /// - Parameters:
-    ///   - version: The CID version. Defaults to `.v1`
+    ///   - version: The CID version. Defaults to `.v1`.
     ///   - content: The `String` object containing the text.
     ///
     /// - Throws: An error if the `String` fails to be converted to a `Data` object, or if the
@@ -172,14 +171,12 @@ public struct CID: Sendable, Hashable {
             throw CIDError.invalidDataConversion(content: content)
         }
 
-        // Register the codec and multihash algorithm.
-        let dagPBCodec = try Multicodec(name: "dag-pb", tag: "dag-pb", code: 0x70, status: .permanent)
-        try await MulticodecRegistry.shared.register(dagPBCodec)
+        // Register the multihash algorithm.
         try await MultihashFactory.shared.register(SHA256Multihash())
 
         // Create multihash with the content, then create the CID.
         let multihash = try await MultihashFactory.shared.hash(using: "sha2-256", data: text)
-        try self.init(version: version, codec: dagPBCodec, multihash: multihash.encoded)
+        try self.init(version: version, codec: Multicodec.dagPB, multihash: multihash.encoded)
     }
 
     /// Initializes a `CID` from its raw binary representation.
@@ -200,7 +197,7 @@ public struct CID: Sendable, Hashable {
         if rawData.count == 34,
            rawData.first == 0x12,
            rawData[rawData.index(rawData.startIndex, offsetBy: 1)] == 0x20 {
-            let dagPB = try Multicodec(name: "dag-pb", tag: "dag-pb", code: 0x70, status: .permanent)
+            let dagPB = Multicodec.dagCBOR
             self.version = .v0
             self.codec = dagPB
             self.multihash = rawData
@@ -212,15 +209,11 @@ public struct CID: Sendable, Hashable {
             }
 
             let remainderAfterVersion = rawData.dropFirst(versionByteCount)
-            let (codecValue, codecByteCount) = try Varint.decodeRaw(from: remainderAfterVersion)
-            let codecCode = Int(codecValue)
-            // For simplicity, if the codec code is dag-pb (0x70) we use it; otherwise, create a placeholder.
-            let codec: Multicodec
-            codec = try await MulticodecRegistry.shared.get(code: codecCode)
+            let (_, codecByteCount) = try Varint.decodeRaw(from: remainderAfterVersion)
 
             let remaining = remainderAfterVersion.dropFirst(codecByteCount)
             self.version = .v1
-            self.codec = codec
+            self.codec = Multicodec.dagPB
             self.multihash = Data(remaining)
         }
     }
