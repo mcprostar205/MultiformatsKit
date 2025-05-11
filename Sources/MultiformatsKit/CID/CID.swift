@@ -179,6 +179,26 @@ public struct CID: Sendable, Hashable {
         try self.init(version: version, codec: Multicodec.dagPB, multihash: multihash.encoded)
     }
 
+    /// Creates a new `CID` using raw `Data` as the content source.
+    ///
+    /// This initializer will automatically add a "dag-pb" multicodec and "sha-256" hash, if it
+    /// hasn't been added yet.
+    ///
+    /// - Parameters:
+    ///   - version: The CID version. Defaults to `.v1`.
+    ///   - data: The `Data` object to be hashed and embedded in the CID.
+    ///
+    /// - Throws: An error if the `String` fails to be converted to a `Data` object, or if the
+    /// provided parameters do not form a valid CID.
+    public init(version: CIDVersion = .v1, data: Data) async throws {
+
+        // Register the multihash algorithm.
+        try await MultihashFactory.shared.register(SHA256Multihash())
+
+        let multihash = try await MultihashFactory.shared.hash(using: "sha2-256", data: data)
+        try self.init(version: version, codec: Multicodec.dagPB, multihash: multihash.encoded)
+    }
+
     /// Initializes a `CID` from its raw binary representation.
     ///
     /// This initializer automatically detects and decodes one of the following:
