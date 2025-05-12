@@ -10,20 +10,43 @@ import Foundation
 /// A data structure that represents a Multicodec entry, as defined in
 /// the [Multicodec specification](https://github.com/multiformats/multicodec).
 ///
-/// A Multicodec defines a self-describing format using a compact prefix (`code`) to identify the
-/// content type of the associated binary data. Multicodecs are used heavily in protocols such as
-/// IPFS, IPLD, libp2p, and others.
+/// A Multicodec defines a self-describing format using a compact prefix to identify the content type of the
+/// associated binary data. Multicodecs are used heavily in protocols such as IPFS, IPLD, libp2p,
+/// and others.
 ///
-/// Each instance stores the codec's name and numeric code. The codec can be used to wrap raw
-/// binary data with a varint-encoded prefix, and to unwrap that data later.
+/// Each static property provides a known codec with its name and code prefix,
+/// used to identify the content type in a self-describing binary format.
 ///
+/// The `Codec` struct wraps the name and code prefix and provides methods
+/// to wrap or unwrap raw binary data with the codec’s prefix.
+///
+/// Multicodecs are central to IPFS, IPLD, and libp2p for type safety in binary data exchange.
+///
+/// ### Example
 /// ```swift
-/// do {
+/// // Original binary data
+/// let rawData = Data([0xde, 0xad, 0xbe, 0xef])
 ///
+/// // Select a codec (e.g., raw binary)
+/// let codec = Multicodec.raw
+///
+/// // Wrap the raw data with the codec’s prefix
+/// let wrapped = codec.wrap(rawData)
+/// print("Wrapped: \(wrapped)")
+///
+/// // Unwrap the data
+/// do {
+///     let unwrapped = try codec.unwrap(wrapped)
+///     print("Unwrapped: \(unwrapped)") // <deadbeef>
 /// } catch {
-///     throw error
+///     print(error)
 /// }
 /// ```
+///
+/// - Note: To extend supported codecs, simply define more static properties with appropriate names and
+/// code values in compliance with the specification.
+///
+/// - SeeAlso: ``Multicodec/Codec``, ``MulticodecError``, and ``Multicodec/allCases``.
 public enum Multicodec: Sendable, Hashable, Equatable {
 
     /// A codec representing CBOR data (code prefix `0x51`).
