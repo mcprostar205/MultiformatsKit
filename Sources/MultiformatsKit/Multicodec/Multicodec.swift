@@ -14,39 +14,6 @@ import Foundation
 /// content type of the associated binary data. Multicodecs are used heavily in protocols such as
 /// IPFS, IPLD, libp2p, and others.
 ///
-/// Each instance stores the codec's name, numeric code, usage tag, registration status, and an
-/// optional description. The codec can be used to wrap raw binary data with a varint-encoded
-/// prefix, and to unwrap that data later.
-///
-/// Use ``MulticodecRegistry/shared`` to register and retrieve codecs globally, or to validate
-/// and organize codecs by tag or status.
-///
-/// ### Example
-///
-/// ```swift
-/// do {
-///     let rawData = Data([0xde, 0xad, 0xbe, 0xef])
-///     let codec = try Multicodec(name: "example-codec", tag: "custom", code: 0x300001)
-///
-///     // Wrap data with varint-encoded codec prefix
-///     let wrapped = try codec.wrap(rawData)
-///
-///     // Later: unwrap the prefix to get the original data
-///     let unwrapped = try codec.unwrap(wrapped)
-///     print(unwrapped == rawData) // true
-/// } catch {
-///     throw error
-/// }
-/// ```
-
-
-/// A data structure that represents a Multicodec entry, as defined in
-/// the [Multicodec specification](https://github.com/multiformats/multicodec).
-///
-/// A Multicodec defines a self-describing format using a compact prefix (`code`) to identify the
-/// content type of the associated binary data. Multicodecs are used heavily in protocols such as
-/// IPFS, IPLD, libp2p, and others.
-///
 /// Each instance stores the codec's name and numeric code. The codec can be used to wrap raw
 /// binary data with a varint-encoded prefix, and to unwrap that data later.
 ///
@@ -59,31 +26,34 @@ import Foundation
 /// ```
 public enum Multicodec: Sendable, Hashable, Equatable {
 
-    /// CBOR.
+    /// A codec representing CBOR data (code prefix `0x51`).
     public static let cbor: Codec = {
         return Codec(name: "cbor", codePrefix: 0x51)
     }()
 
-    /// Raw binary.
+    /// A codec representing raw binary data (code prefix `0x55`).
     public static let raw: Codec = {
         return Codec(name: "raw", codePrefix: 0x55)
     }()
 
-    /// MerkleDAG protobuf.
+    /// A codec representing MerkleDAG Protobuf nodes (code prefix `0x70`).
     public static let dagPB: Codec = {
         return Codec(name: "dag-pb", codePrefix: 0x70)
     }()
 
-    /// MerkleDAG-CBOR.
+    /// A codec representing "MerkleDAG-CBOR" (code prefix `0x71`).
     public static let dagCBOR: Codec = {
         return Codec(name: "dag-cbor", codePrefix: 0x71)
     }()
 
-    /// Libp2p Public Key.
+    /// A codec representing a Libp2p Public Key (code prefix `0x72`).
     public static let libp2pKey: Codec = {
         return Codec(name: "libp2p-key", codePrefix: 0x72)
     }()
 
+    /// Returns all predefined codec cases.
+    ///
+    /// Useful for lookup, debugging, and validation against known multicodecs.
     public static let allCases: [Codec] = {
         return [
             Multicodec.cbor,
@@ -94,7 +64,15 @@ public enum Multicodec: Sendable, Hashable, Equatable {
         ]
     }()
 
-    /// A codec supported by `Multicodec`.
+    /// A struct representing a single codec entry with a name and numeric code prefix.
+    ///
+    /// This is used to wrap and unwrap data with a multicodec prefix, allowing for type identification in
+    /// content-addressed systems.
+    ///
+    /// The `wrap(_:)` method prepends the codec’s prefix to raw data.
+    /// The `unwrap(_:)` method verifies the prefix and returns the original data.
+    ///
+    /// - Note: The prefix is always a single byte (`UInt8`) in this implementation.
     public struct Codec: Sendable, Hashable, Codable {
 
         /// The name of the codec.
