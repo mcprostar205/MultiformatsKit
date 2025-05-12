@@ -1,4 +1,4 @@
-#  ``MultiformatsKit/MultibaseSendable``
+# ``MultiformatsKit/MultibaseSendable``
 
 ## Topics
 
