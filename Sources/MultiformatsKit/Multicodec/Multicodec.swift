@@ -114,27 +114,4 @@ public enum Multicodec: Sendable, Hashable, Equatable {
             hasher.combine(codePrefix)
         }
     }
-
-    /// Errors that may be thrown by `Multicodec`.
-    public enum MulticodecError: Error, LocalizedError, Sendable {
-
-        /// The provided data is empty.
-        case emptyData
-
-        /// There is a mismatch between the expected and found code.
-        ///
-        /// - Parameters:
-        ///   - expected: The expected code.
-        ///   - found: The code that was actually there.
-        case mismatchedCode(expected: UInt8, found: UInt8)
-
-        public var errorDescription: String? {
-            switch self {
-                case .emptyData:
-                    return "The provided data is empty."
-                case let .mismatchedCode(expected, found):
-                    return "Mismatched multicodec code. Expected 0x\(String(format: "%02x", expected)), found 0x\(String(format: "%02x", found))."
-            }
-        }
-    }
 }

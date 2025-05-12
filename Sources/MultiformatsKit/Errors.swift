@@ -60,6 +60,9 @@ public enum VarintError: Error, LocalizedError, CustomStringConvertible {
 /// A list of errors related to Multicodec operations.
 public enum MulticodecError: Error, LocalizedError {
 
+    /// The provided data is empty.
+    case emptyData
+
     /// The name provided is invalid.
     ///
     /// - Parameter name: The name provided.
@@ -75,12 +78,12 @@ public enum MulticodecError: Error, LocalizedError {
     /// - Parameter status: The status provided.
     case invalidStatus(status: String)
 
-    /// There is a mismatch with the code.
+    /// There is a mismatch between the expected and found code.
     ///
     /// - Parameters:
-    ///   - expected: The code that was expected.
-    ///   - found: The code that was found instead.
-    case mismatchedCode(expected: Int, found: Int)
+    ///   - expected: The expected code.
+    ///   - found: The code that was actually there.
+    case mismatchedCode(expected: UInt8, found: UInt8)
 
     /// The Multicode is not registered.
     ///
@@ -102,6 +105,8 @@ public enum MulticodecError: Error, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
+            case .emptyData:
+                return "The provided data is empty."
             case .invalidName(let name):
                 return "Invalid multicodec name: \(name)"
             case .invalidCode(let code):
@@ -109,7 +114,7 @@ public enum MulticodecError: Error, LocalizedError {
             case .invalidStatus(let status):
                 return "Invalid multicodec status: \(status)"
             case .mismatchedCode(let expected, let found):
-                return "Expected code \(expected), but found \(found)."
+                return "Mismatched multicodec code. Expected 0x\(String(format: "%02x", expected)), found 0x\(String(format: "%02x", found))."
             case .notRegistered(let id):
                 return "Multicodec not registered: \(id)"
             case .duplicateName(let name):
