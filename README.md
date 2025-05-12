@@ -61,25 +61,22 @@ do {
 ### Multicodec
 
 ```swift
+// Original binary data
+let rawData = Data([0xde, 0xad, 0xbe, 0xef])
+
+// Select a codec (e.g., raw binary)
+let codec = Multicodec.raw
+
+// Wrap the raw data with the codec’s prefix
+let wrapped = codec.wrap(rawData)
+print("Wrapped: \(wrapped)")
+
+// Unwrap the data
 do {
-    let dagPB = try Multicodec(name: "dag-pb", tag: "dag-pb", code: 0x70, status: .permanent)
-    try await MulticodecRegistry.shared.register(dagPB)
-    
-    let dagPBEntry = MulticodecRegistry.shared.get(name: "dag-pb")
-    let data = Data("Hello from Multicodec!".utf8)
-    let wrapped = try await Multicodec.shared.wrap(dagPBEntry, rawData: data)
-    
-    let (unwrappedCodec, unwrappedData) = try await MulticodecRegistry.shared.unwrap(wrapped)
-    print(unwrappedCodec.name) // "dag-pb"
-    
-    if let string = String(data: unwrappedData, encoding: .utf8) {
-        print(string) // Will return as "dag-pb".
-    } else {
-        print("Failed to decode UTF-8 string")
-    }
-    
+    let unwrapped = try codec.unwrap(wrapped)
+    print("Unwrapped: \(unwrapped)")
 } catch {
-    throw error
+    print(error)
 }
 ```
 

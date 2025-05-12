@@ -37,7 +37,7 @@ import Foundation
 /// // Unwrap the data
 /// do {
 ///     let unwrapped = try codec.unwrap(wrapped)
-///     print("Unwrapped: \(unwrapped)") // <deadbeef>
+///     print("Unwrapped: \(unwrapped)")
 /// } catch {
 ///     print(error)
 /// }
