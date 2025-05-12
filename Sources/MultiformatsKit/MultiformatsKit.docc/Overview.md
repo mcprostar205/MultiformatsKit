@@ -44,12 +44,11 @@ This package includes support for the core Multiformats technologies:
 - ``BaseNAlphabet``
 - ``BaseN``
 - ``RFC4648Codec``
+- ``MultibaseSendable``
 
 ### Multicodec
 
 - ``Multicodec``
-- ``MulticodecRegistry``
-- ``MultibaseSendable``
 
 ### Multihash
 
