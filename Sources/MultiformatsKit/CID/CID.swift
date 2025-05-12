@@ -63,10 +63,10 @@ import Foundation
 ///     }
 /// }
 /// ```
-public struct CID: Sendable, Hashable {
+public struct CID: Codable, Sendable, Hashable {
 
     /// The version of the CID.
-    public enum CIDVersion: UInt8, Sendable, Hashable {
+    public enum CIDVersion: UInt8, Codable, Sendable, Hashable {
 
         /// Version 0.
         case v0 = 0
@@ -285,4 +285,17 @@ public struct CID: Sendable, Hashable {
     /// - Throws: A `CIDError` if decoding fails.
     public static func decode(from string: String) throws -> CID {
         return try CID(string: string)
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let cidString = try container.decode(String.self)
+        self = try CID(string: cidString)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(try self.encode())
+    }
+
 }
