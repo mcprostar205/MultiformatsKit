@@ -6,6 +6,7 @@
 
 - ``init(version:codec:multihash:)``
 - ``init(version:content:)``
+- ``init(version:data:)``
 
 ### Decoding an Existing CID
 
