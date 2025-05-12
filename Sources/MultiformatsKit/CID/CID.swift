@@ -212,7 +212,7 @@ public struct CID: Sendable, Hashable {
     /// - Parameter rawData: A binary representation of a CID (either v0 or v1).
     ///
     /// - Throws: A `CIDError` if the binary data does not represent a valid CID.
-    public init(rawData: Data) async throws {
+    public init(rawData: Data) throws {
         // Check for CIDv0: exactly 34 bytes, starting with 0x12, 0x20.
         if rawData.count == 34,
            rawData.first == 0x12,
@@ -243,14 +243,14 @@ public struct CID: Sendable, Hashable {
     /// - Parameter string: The string representation of the CID.
     ///
     /// - Throws: A `CIDError` if the string cannot be decoded as a valid CID.
-    public init(string: String) async throws {
+    public init(string: String) throws {
         // Heuristic for CIDv0: 46-character strings starting with "Qm".
         if string.count == 46 && string.hasPrefix("Qm") {
             let alphabet = BaseNAlphabet("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
             let base58 = BaseN(alphabet: alphabet)
             let data = try base58.decode(string)
 
-            try await self.init(rawData: data)
+            try self.init(rawData: data)
         } else {
             // Otherwise, assume a multibase-encoded CIDv1.
             guard let mbPrefix = string.first else {
@@ -261,7 +261,7 @@ public struct CID: Sendable, Hashable {
                 let encodedPart = String(string.dropFirst())
                 let rawData = try Multibase.base32Lower.decode(encodedPart)
 
-                try await self.init(rawData: rawData)
+                try self.init(rawData: rawData)
             } else {
                 throw CIDError.invalidCID(message: "Unsupported multibase prefix: \(mbPrefix)")
             }
@@ -283,7 +283,6 @@ public struct CID: Sendable, Hashable {
     /// - Returns: A valid `CID` instance.
     ///
     /// - Throws: A `CIDError` if decoding fails.
-    public static func decode(from string: String) async throws -> CID {
-        return try await CID(string: string)
-    }
+    public static func decode(from string: String) throws -> CID {
+        return try CID(string: string)
 }
