@@ -289,8 +289,28 @@ public struct CID: Codable, Sendable, Hashable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        let cidString = try container.decode(String.self)
-        self = try CID(string: cidString)
+        if let cidString = try? container.decode(String.self) {
+            self = try CID(string: cidString)
+            return
+        }
+
+        // Try decoding from a DAG-CBOR tagged value
+        if let bytes = try? container.decode(Data.self) {
+            guard bytes.first == 0x00 else {
+                throw DecodingError.dataCorrupted(.init(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "DAG-CBOR CID must begin with '0x00'."
+                ))
+            }
+            let cidData = bytes.dropFirst()
+            self = try CID(rawData: Data(cidData))
+            return
+        }
+
+        throw DecodingError.dataCorrupted(.init(
+            codingPath: decoder.codingPath,
+            debugDescription: "Expected CID to be either a string or tagged DAG-CBOR CID."
+        ))
     }
 
     public func encode(to encoder: Encoder) throws {
