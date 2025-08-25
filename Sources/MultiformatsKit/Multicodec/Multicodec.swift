@@ -104,6 +104,11 @@ public enum Multicodec: Sendable, Hashable, Equatable {
         /// The code prefix of the codec, encoded as a single byte.
         public let codePrefix: UInt8
 
+        public init(name: String, codePrefix: UInt8) {
+            self.name = name
+            self.codePrefix = codePrefix
+        }
+        
         /// Wraps raw binary data with the varint-encoded multicodec prefix.
         ///
         /// - Parameter rawData: The raw binary data to wrap.
